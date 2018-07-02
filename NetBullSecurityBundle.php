@@ -4,7 +4,7 @@ namespace NetBull\SecurityBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-use NetBull\Security\DependencyInjection\NetBullSecurityExtension;
+use NetBull\SecurityBundle\DependencyInjection\NetBullSecurityExtension;
 
 /**
  * Class NetBullSecurityBundle
