@@ -10,7 +10,7 @@ services:
         arguments: ['NetBull\SecurityBundle\Entity\ListedIP']
 
     netbull_security.manager:
-        class: NetBull\SecurityBundle\Managers\SecurutyManager
+        class: NetBull\SecurityBundle\Managers\SecurityManager
         arguments: ['', '']
         public: true
         calls:
