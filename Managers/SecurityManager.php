@@ -1,6 +1,6 @@
 <?php
 
-namespace NetBull\AuthBundle\Security;
+namespace NetBull\SecurityBundle\Managers;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -10,7 +10,7 @@ use NetBull\SecurityBundle\Repository\BlockedIPRepository;
 
 /**
  * Class SecurityManager
- * @package NetBull\AuthBundle\Security
+ * @package NetBull\SecurityBundle\Managers
  */
 class SecurityManager
 {

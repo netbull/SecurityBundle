@@ -2,16 +2,16 @@
 
 namespace NetBull\SecurityBundle\Security;
 
-use NetBull\SecurityBundle\Entity\ListedIP;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
-use NetBull\AuthBundle\Security\SecurityManager;
+use NetBull\SecurityBundle\Entity\ListedIP;
+use NetBull\SecurityBundle\Managers\SecurityManager;
 
 /**
  * Class BlockedIPListener
- * @package NetBull\AuthBundle\Security
+ * @package NetBull\SecurityBundle\Security
  */
 class BlockedIPListener
 {

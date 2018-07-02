@@ -1,6 +1,6 @@
 <?php
 
-namespace NetBull\Security\DependencyInjection;
+namespace NetBull\SecurityBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
