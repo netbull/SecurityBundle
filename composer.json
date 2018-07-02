@@ -1,0 +1,25 @@
+{
+  "name" : "netbull/security-bundle",
+  "description" : "NetBull Security bundle",
+  "type" : "symfony-bundle",
+  "authors" : [{
+    "name" : "Aleksandar Dimitrov",
+    "email" : "netbull2007@gmail.com"
+  }],
+  "license" : [
+    "MIT"
+  ],
+  "require" : {
+    "php": "^7.1.3",
+    "symfony/framework-bundle": "~4.0",
+    "netbull/core-bundle": "^2.0"
+  },
+  "require-dev" : {
+    "symfony/phpunit-bridge": "~4.0"
+  },
+  "autoload" : {
+    "psr-4" : {
+      "NetBull\\SecurityBundle\\" : ""
+    }
+  }
+}
