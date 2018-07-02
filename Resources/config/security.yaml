@@ -19,7 +19,7 @@ services:
 
     netbull_security.blocked_ip_listener:
             class: NetBull\SecurityBundle\Security\BlockedIPListener
-            arguments: ['@netbull_security.manager', '@router']
+            arguments: ['@netbull_security.manager', '@router', '']
             tags:
                 - name: kernel.event_listener
                   event: kernel.request
