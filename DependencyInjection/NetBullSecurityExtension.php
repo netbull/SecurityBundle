@@ -22,10 +22,6 @@ class NetBullSecurityExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        foreach ($config as $name => $value) {
-            $container->setParameter('netbull_security.' . $name, $value);
-        }
-
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('security.yaml');
 
