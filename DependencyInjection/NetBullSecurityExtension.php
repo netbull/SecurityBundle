@@ -29,7 +29,7 @@ class NetBullSecurityExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('security.yaml');
 
-        $service = $container->getDefinition('netbull_security.blocked_ip_listener');
+        $service = $container->getDefinition('netbull_security.security_listener');
         $service->replaceArgument(2, $config['banned_route']);
 
         $service = $container->getDefinition('netbull_security.manager');
