@@ -23,6 +23,7 @@ class NetBullSecurityExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('fingerprints.yaml');
         $loader->load('security.yaml');
 
         $service = $container->getDefinition('netbull_security.security_listener');
