@@ -31,6 +31,9 @@ class NetBullSecurityExtension extends Extension
         $service = $container->getDefinition('netbull_security.manager');
         $service->replaceArgument(0, $config['max_attempts']);
         $service->replaceArgument(1, $config['attempts_threshold']);
+
+        $fingerprintService = $container->getDefinition('netbull_security.fingerprint.' . $config['fingerprint']);
+        $service->replaceArgument(2, $fingerprintService);
     }
 
     /**

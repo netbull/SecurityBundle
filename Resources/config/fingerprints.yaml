@@ -1,0 +1,7 @@
+services:
+    netbull_security.fingerprint.browser:
+        class: NetBull\SecurityBundle\Fingerprints\Browser
+        arguments: ['%kernel.project_dir%', '@logger']
+
+    netbull_security.fingerprint.ip:
+        class: NetBull\SecurityBundle\Fingerprints\Ip

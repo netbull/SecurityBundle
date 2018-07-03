@@ -2,7 +2,6 @@
 
 namespace NetBull\SecurityBundle\Managers;
 
-use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -10,6 +9,7 @@ use NetBull\SecurityBundle\Entity\Listed;
 use NetBull\SecurityBundle\Entity\Attempt;
 use NetBull\SecurityBundle\Repository\ListedRepository;
 use NetBull\SecurityBundle\Repository\AttemptRepository;
+use NetBull\SecurityBundle\Fingerprints\FingerprintInterface;
 
 /**
  * Class SecurityManager
@@ -28,9 +28,9 @@ class SecurityManager
     protected $attemptsThreshold;
 
     /**
-     * @var EntityManager
+     * @var FingerprintInterface
      */
-    protected $em;
+    protected $fingerprint;
 
     /**
      * @var AttemptRepository
@@ -51,16 +51,17 @@ class SecurityManager
      * SecurityManager constructor.
      * @param int $maxAttempts
      * @param int $attemptsThreshold
-     * @param EntityManager $em
+     * @param FingerprintInterface $fingerprint
+     * @param AttemptRepository $attemptRepository
+     * @param ListedRepository $listedRepository
      */
-    public function __construct(int $maxAttempts, int $attemptsThreshold, EntityManager $em)
+    public function __construct(int $maxAttempts, int $attemptsThreshold, FingerprintInterface $fingerprint, AttemptRepository $attemptRepository, ListedRepository $listedRepository)
     {
         $this->maxAttempts = $maxAttempts;
         $this->attemptsThreshold = $attemptsThreshold;
-        $this->em = $em;
-
-        $this->attemptRepository = $em->getRepository(Attempt::class);
-        $this->listedRepository = $em->getRepository(Listed::class);
+        $this->fingerprint = $fingerprint;
+        $this->attemptRepository = $attemptRepository;
+        $this->listedRepository = $listedRepository;
 
         $this->refreshLists();
         $this->removeOldRecords();
@@ -185,6 +186,6 @@ class SecurityManager
      */
     public function computeFingerprint(Request $request)
     {
-        return $request->getClientIp();
+        return $this->fingerprint->compute($request);
     }
 }
