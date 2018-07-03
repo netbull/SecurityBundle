@@ -18,18 +18,6 @@
   "require-dev" : {
     "symfony/phpunit-bridge": "~4.0"
   },
-  "scripts": {
-    "auto-scripts": {
-      "vendor/bin/browscap-php browscap:fetch": "php-script",
-      "vendor/bin/browscap-php browscap:convert": "php-script"
-    },
-    "post-install-cmd": [
-      "@auto-scripts"
-    ],
-    "post-update-cmd": [
-      "@auto-scripts"
-    ]
-  },
   "autoload" : {
     "psr-4" : {
       "NetBull\\SecurityBundle\\" : ""
