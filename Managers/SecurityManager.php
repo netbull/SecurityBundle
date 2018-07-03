@@ -111,11 +111,15 @@ class SecurityManager
     }
 
     /**
-     * @param string $fingerprint
-     * @return null
+     * @param null|string $fingerprint
+     * @return bool
      */
-    public function isBlocked(string $fingerprint)
+    public function isBlocked(?string $fingerprint)
     {
+        if (!$fingerprint) {
+            return false;
+        }
+
         $listedRecord = $this->isListed($fingerprint);
 
         if ($listedRecord) {
