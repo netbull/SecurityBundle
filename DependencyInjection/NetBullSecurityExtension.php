@@ -2,6 +2,7 @@
 
 namespace NetBull\SecurityBundle\DependencyInjection;
 
+use NetBull\SecurityBundle\Exception\InvalidFingerprintException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -33,7 +34,11 @@ class NetBullSecurityExtension extends Extension
         $service->replaceArgument(0, $config['max_attempts']);
         $service->replaceArgument(1, $config['attempts_threshold']);
 
-        $fingerprintService = $container->getDefinition('netbull_security.fingerprint.' . $config['fingerprint']);
+        if (!$container->hasDefinition($config['fingerprint'])) {
+            throw new InvalidFingerprintException($config['fingerprint']);
+        }
+
+        $fingerprintService = $container->getDefinition($config['fingerprint']);
         $service->replaceArgument(2, $fingerprintService);
     }
 
