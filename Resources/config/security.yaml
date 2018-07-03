@@ -1,27 +1,11 @@
 services:
-    netbull_security.blocked_ip_repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
-        arguments: ['NetBull\SecurityBundle\Entity\BlockedIP']
-
-    netbull_security.listed_ip_repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
-        arguments: ['NetBull\SecurityBundle\Entity\ListedIP']
-
     netbull_security.manager:
         class: NetBull\SecurityBundle\Managers\SecurityManager
-        arguments: ['', '']
+        arguments: ['', '', '@doctrine.orm.entity_manager']
         public: true
-        calls:
-          - [setBlockedIPRepository, ['@netbull_security.blocked_ip_repository']]
-          - [setListedIPRepository, ['@netbull_security.listed_ip_repository']]
 
-    netbull_security.blocked_ip_listener:
-            class: NetBull\SecurityBundle\Security\BlockedIPListener
-            arguments: ['@netbull_security.manager', '@router', '']
-            tags:
-                - name: kernel.event_listener
-                  event: kernel.request
-                  method: onKernelRequest
-                  priority: 0
+    netbull_security.security_listener:
+        class: NetBull\SecurityBundle\Security\SecurityListener
+        arguments: ['@netbull_security.manager', '@router', '']
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 0 }

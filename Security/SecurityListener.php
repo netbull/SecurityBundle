@@ -6,14 +6,13 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
-use NetBull\SecurityBundle\Entity\ListedIP;
 use NetBull\SecurityBundle\Managers\SecurityManager;
 
 /**
- * Class BlockedIPListener
+ * Class SecurityListener
  * @package NetBull\SecurityBundle\Security
  */
-class BlockedIPListener
+class SecurityListener
 {
     /**
      * @var SecurityManager
@@ -31,7 +30,7 @@ class BlockedIPListener
     protected $bannedRoute;
 
     /**
-     * BlockedIPListener constructor.
+     * SecurityListener constructor.
      * @param SecurityManager $manager
      * @param RouterInterface $router
      * @param string $bannedRoute
@@ -50,23 +49,14 @@ class BlockedIPListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        if (!$event->isMasterRequest()) {
+        $request = $event->getRequest();
+        if (!$event->isMasterRequest() || $request->get('_route') === $this->bannedRoute) {
             return;
         }
 
-        $ip = $event->getRequest()->getClientIp();
+        $fingerprint = $this->manager->computeFingerprint($request);
 
-        $listedRecord = $this->manager->isIPListed($ip);
-        if ($listedRecord) {
-            switch ($listedRecord['action']) {
-                case ListedIP::ACTION_ALLOW:
-                    return;
-                case ListedIP::ACTION_DENY:
-                    $response = $this->getRedirectResponse($this->bannedRoute);
-                    $event->setResponse($response);
-                    break;
-            }
-        } elseif ($this->manager->isIPBlocked($ip)) {
+        if ($this->manager->isBlocked($fingerprint)) {
             $response = $this->getRedirectResponse($this->bannedRoute);
             $event->setResponse($response);
         }

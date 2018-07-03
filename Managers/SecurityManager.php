@@ -2,11 +2,14 @@
 
 namespace NetBull\SecurityBundle\Managers;
 
+use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\Request;
 
-use NetBull\SecurityBundle\Entity\BlockedIP;
-use NetBull\SecurityBundle\Repository\ListedIPRepository;
-use NetBull\SecurityBundle\Repository\BlockedIPRepository;
+use NetBull\SecurityBundle\Entity\Listed;
+use NetBull\SecurityBundle\Entity\Attempt;
+use NetBull\SecurityBundle\Repository\ListedRepository;
+use NetBull\SecurityBundle\Repository\AttemptRepository;
 
 /**
  * Class SecurityManager
@@ -25,14 +28,19 @@ class SecurityManager
     protected $attemptsThreshold;
 
     /**
-     * @var BlockedIPRepository
+     * @var EntityManager
      */
-    protected $blockedIPRepository;
+    protected $em;
 
     /**
-     * @var ListedIPRepository
+     * @var AttemptRepository
      */
-    protected $listedIPRepository;
+    protected $attemptRepository;
+
+    /**
+     * @var ListedRepository
+     */
+    protected $listedRepository;
 
     /**
      * @var array
@@ -40,35 +48,22 @@ class SecurityManager
     protected $list = [];
 
     /**
-     * @var BlockedIP|null
-     */
-    protected $attempt;
-
-    /**
      * SecurityManager constructor.
      * @param int $maxAttempts
      * @param int $attemptsThreshold
+     * @param EntityManager $em
      */
-    public function __construct(int $maxAttempts, int $attemptsThreshold)
+    public function __construct(int $maxAttempts, int $attemptsThreshold, EntityManager $em)
     {
         $this->maxAttempts = $maxAttempts;
         $this->attemptsThreshold = $attemptsThreshold;
-    }
+        $this->em = $em;
 
-    /**
-     * @param BlockedIPRepository $blockedIPRepository
-     */
-    public function setBlockedIPRepository(BlockedIPRepository $blockedIPRepository)
-    {
-        $this->blockedIPRepository = $blockedIPRepository;
-    }
+        $this->attemptRepository = $em->getRepository(Attempt::class);
+        $this->listedRepository = $em->getRepository(Listed::class);
 
-    /**
-     * @param ListedIPRepository $listedIPRepository
-     */
-    public function setListedIPRepository(ListedIPRepository $listedIPRepository)
-    {
-        $this->listedIPRepository = $listedIPRepository;
+        $this->refreshLists();
+        $this->removeOldRecords();
     }
 
     /**
@@ -77,30 +72,36 @@ class SecurityManager
      */
     protected function storeAttempt(Request $request)
     {
-        $this->refreshLists();
-        $ip = $request->getClientIp();
-        $listedIp = $this->isIPListed($ip);
+        $fingerprint = $this->computeFingerprint($request);
 
-        if ($listedIp) {
+        $listed = $this->isListed($fingerprint);
+
+        if ($listed) {
             return false;
         }
 
-        $attempt = $this->getAttempt($ip);
-        $attempt->setAttempts($attempt->getAttempts() + 1);
-
-        $this->blockedIPRepository->save($attempt);
+        $attempt = $this->getAttempt($fingerprint);
+        $this->attemptRepository->save($attempt);
 
         return true;
     }
 
+    ######################################################
+    #                                                    #
+    #                         Tests                      #
+    #                                                    #
+    ######################################################
+
     /**
-     * @param $ip
+     * @param $fingerprint
      * @return mixed|null
      */
-    public function isIPListed($ip)
+    public function isListed($fingerprint)
     {
         foreach ($this->list as $listedRecord) {
-            if ($this->ipInRange($ip, $listedRecord['ip'])) {
+            if (false !== ip2long($fingerprint) && IpUtils::checkIp($fingerprint, $listedRecord['fingerprint'])) {
+                return $listedRecord;
+            } else if ($fingerprint === $listedRecord['fingerprint']) {
                 return $listedRecord;
             }
         }
@@ -109,18 +110,21 @@ class SecurityManager
     }
 
     /**
-     * @param string $ip
+     * @param string $fingerprint
      * @return null
      */
-    public function isIPBlocked(string $ip)
+    public function isBlocked(string $fingerprint)
     {
-        $oldRecordsTime = new \DateTime('now');
-        $oldRecordsTime->modify('- ' . $this->attemptsThreshold . ' seconds');
+        $listedRecord = $this->isListed($fingerprint);
 
-        $this->blockedIPRepository->removeOldRecords($oldRecordsTime);
-        $attempt = $this->getAttempt($ip);
-
-        if ($attempt->getAttempts() > $this->maxAttempts) {
+        if ($listedRecord) {
+            switch ($listedRecord['action']) {
+                case Listed::ACTION_ALLOW:
+                    return false;
+                case Listed::ACTION_DENY:
+                    return true;
+            }
+        } elseif ($this->isMaxAttemptsExceeded($fingerprint)) {
             return true;
         }
 
@@ -128,52 +132,59 @@ class SecurityManager
     }
 
     /**
+     * @param string $fingerprint
+     * @return bool
+     */
+    public function isMaxAttemptsExceeded(string $fingerprint)
+    {
+        return $this->attemptRepository->countAttempts($fingerprint) >= $this->maxAttempts;
+    }
+
+    ######################################################
+    #                                                    #
+    #                   Helper Methods                   #
+    #                                                    #
+    ######################################################
+
+    /**
      * Refreshes the lists
      */
     private function refreshLists()
     {
         if (0 === count($this->list)) {
-            $this->list = $this->listedIPRepository->getAll();
+            $this->list = $this->listedRepository->getAll();
         }
     }
 
     /**
-     * @param $ip
-     * @return BlockedIP|null|object
+     * Removes old attempts
      */
-    private function getAttempt($ip)
+    private function removeOldRecords()
     {
-        $attempt = $this->blockedIPRepository->findOneBy([ 'ip' => $ip ]);
+        $oldRecordsTime = new \DateTime('now');
+        $oldRecordsTime->modify('- ' . $this->attemptsThreshold . ' seconds');
 
-        if (null === $attempt) {
-            $attempt = new BlockedIP();
-            $attempt->setIp($ip);
-        }
+        $this->attemptRepository->removeOldRecords($oldRecordsTime);
+    }
+
+    /**
+     * @param $fingerprint
+     * @return Attempt
+     */
+    private function getAttempt($fingerprint)
+    {
+        $attempt = new Attempt();
+        $attempt->setFingerprint($fingerprint);
 
         return $attempt;
     }
 
     /**
-     * Check if a given ip is in a network
-     *
-     * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
-     * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
-     * @return boolean true if the ip is in this range / false if not.
+     * @param Request $request
+     * @return null|string
      */
-    private function ipInRange($ip, $range)
+    public function computeFingerprint(Request $request)
     {
-        if (false === strpos($range, '/' )) {
-            $range .= '/32';
-        }
-
-        // $range is in IP/CIDR format eg 127.0.0.1/24
-        list($range, $netMask) = explode('/', $range, 2);
-
-        $rangeDecimal = ip2long($range);
-        $ipDecimal = ip2long($ip);
-        $wildcardDecimal = pow(2, (32 - $netMask)) - 1;
-        $netMaskDecimal = ~ $wildcardDecimal;
-
-        return (($ipDecimal & $netMaskDecimal) === ($rangeDecimal & $netMaskDecimal));
+        return $request->getClientIp();
     }
 }

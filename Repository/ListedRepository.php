@@ -5,14 +5,14 @@ namespace NetBull\SecurityBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 
-use NetBull\SecurityBundle\Entity\ListedIP;
+use NetBull\SecurityBundle\Entity\Listed;
 use NetBull\CoreBundle\Paginator\PaginatorInterface;
 
 /**
- * Class ListedIPRepository
+ * Class ListedRepository
  * @package NetBull\SecurityBundle\Repository
  */
-class ListedIPRepository extends EntityRepository implements PaginatorInterface
+class ListedRepository extends EntityRepository implements PaginatorInterface
 {
     /**
      * {@inheritdoc}
@@ -20,15 +20,16 @@ class ListedIPRepository extends EntityRepository implements PaginatorInterface
     public function getPaginationCount(array $params = [])
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select($qb->expr()->countDistinct('i'))
-            ->from($this->getEntityName(), 'i')
+        $qb
+            ->select($qb->expr()->countDistinct('l'))
+            ->from($this->getEntityName(), 'l')
         ;
 
-        if(isset($params['query']) && '' !== $params['query']){
+        if (isset($params['query']) && '' !== $params['query']) {
             $qb
                 ->andWhere($qb->expr()->orX(
-                    $qb->expr()->eq('i.id', ':qE'),
-                    $qb->expr()->like('i.ip', ':qL')
+                    $qb->expr()->eq('l.id', ':qE'),
+                    $qb->expr()->like('l.fingerprint', ':qL')
                 ))
                 ->setParameter('qE', $params['query'])
                 ->setParameter('qL', '%' . trim($params['query']) . '%')
@@ -45,7 +46,7 @@ class ListedIPRepository extends EntityRepository implements PaginatorInterface
     {
         $qb = $this->getPaginationCount($params);
         $qb->resetDQLPart('select');
-        $qb->select('i.id')->groupBy('i.id');
+        $qb->select('l.id')->groupBy('l.id');
 
         return $qb;
     }
@@ -57,19 +58,19 @@ class ListedIPRepository extends EntityRepository implements PaginatorInterface
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb
-            ->select('partial i.{id,ip,action}')
-            ->from($this->getEntityName(), 'i')
+            ->select('partial l.{id,fingerprint,action}')
+            ->from($this->getEntityName(), 'l')
         ;
 
         return $qb;
     }
 
     /**
-     * @param ListedIP $listedIP
+     * @param Listed $listed
      */
-    public function save(ListedIP $listedIP)
+    public function save(Listed $listed)
     {
-        $this->_em->persist($listedIP);
+        $this->_em->persist($listed);
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {}
@@ -81,14 +82,14 @@ class ListedIPRepository extends EntityRepository implements PaginatorInterface
      */
     public function getAll(?string $action = null)
     {
-        $qb = $this->createQueryBuilder('i');
+        $qb = $this->createQueryBuilder('l');
 
         if (!$action) {
             return $qb->getQuery()->getArrayResult();
         }
 
         $qb
-            ->where($qb->expr()->eq('i.action', ':action'))
+            ->where($qb->expr()->eq('l.action', ':action'))
             ->setParameter('action', $action)
         ;
 

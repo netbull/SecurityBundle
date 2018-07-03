@@ -7,14 +7,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * ListedIP
+ * Listed
  *
- * @ORM\Table(name="listed_ips")
+ * @ORM\Table(name="security_listed")
  *
- * @UniqueEntity(fields="ip", message="Sorry, you already use this IP/CIDR.")
- * @ORM\Entity(repositoryClass="NetBull\SecurityBundle\Repository\ListedIPRepository")
+ * @UniqueEntity(fields="fingerprint", message="Sorry, you already use this Fingerprint.")
+ * @ORM\Entity(repositoryClass="NetBull\SecurityBundle\Repository\ListedRepository")
  */
-class ListedIP
+class Listed
 {
     const ACTION_ALLOW = 'allow';
     const ACTION_DENY = 'deny';
@@ -32,14 +32,14 @@ class ListedIP
      * @var string
      *
      * @Assert\Ip
-     * @ORM\Column(name="ip", type="string", length=15)
+     * @ORM\Column(type="string")
      */
-    private $ip;
+    private $fingerprint;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="action", type="string", length=5)
+     * @ORM\Column(type="string", length=5)
      */
     private $action = self::ACTION_ALLOW;
 
@@ -62,17 +62,17 @@ class ListedIP
     /**
      * @return string
      */
-    public function getIp(): string
+    public function getFingerprint(): string
     {
-        return $this->ip;
+        return $this->fingerprint;
     }
 
     /**
-     * @param string $ip
+     * @param string $fingerprint
      */
-    public function setIp(string $ip): void
+    public function setFingerprint(string $fingerprint): void
     {
-        $this->ip = $ip;
+        $this->fingerprint = $fingerprint;
     }
 
     /**

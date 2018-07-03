@@ -3,16 +3,18 @@
 namespace NetBull\SecurityBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 
-use NetBull\SecurityBundle\Entity\BlockedIP;
+use NetBull\SecurityBundle\Entity\Attempt;
 use NetBull\CoreBundle\Paginator\PaginatorInterface;
 
 /**
- * Class BlockedIPRepository
+ * Class AttemptRepository
  * @package NetBull\SecurityBundle\Repository
  */
-class BlockedIPRepository extends EntityRepository implements PaginatorInterface
+class AttemptRepository extends EntityRepository implements PaginatorInterface
 {
     /**
      * {@inheritdoc}
@@ -20,15 +22,16 @@ class BlockedIPRepository extends EntityRepository implements PaginatorInterface
     public function getPaginationCount(array $params = [])
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select($qb->expr()->countDistinct('i'))
-            ->from($this->getEntityName(), 'i')
+        $qb
+            ->select($qb->expr()->countDistinct('a'))
+            ->from($this->getEntityName(), 'a')
         ;
 
-        if(isset($params['query']) && '' !== $params['query']){
+        if (isset($params['query']) && '' !== $params['query']) {
             $qb
                 ->andWhere($qb->expr()->orX(
-                    $qb->expr()->eq('i.id', ':qE'),
-                    $qb->expr()->like('i.ip', ':qL')
+                    $qb->expr()->eq('a.id', ':qE'),
+                    $qb->expr()->like('a.fingerprint', ':qL')
                 ))
                 ->setParameter('qE', $params['query'])
                 ->setParameter('qL', '%' . trim($params['query']) . '%')
@@ -45,7 +48,7 @@ class BlockedIPRepository extends EntityRepository implements PaginatorInterface
     {
         $qb = $this->getPaginationCount($params);
         $qb->resetDQLPart('select');
-        $qb->select('i.id')->groupBy('i.id');
+        $qb->select('a.id')->groupBy('a.id');
 
         return $qb;
     }
@@ -57,19 +60,19 @@ class BlockedIPRepository extends EntityRepository implements PaginatorInterface
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb
-            ->select('partial i.{id,ip,attempts,lastAttemptAt,bannedAt}')
-            ->from($this->getEntityName(), 'i')
+            ->select('partial a.{id,fingerprint,createdAt}')
+            ->from($this->getEntityName(), 'a')
         ;
 
         return $qb;
     }
 
     /**
-     * @param BlockedIP $blockedIP
+     * @param Attempt $attempt
      */
-    public function save(BlockedIP $blockedIP)
+    public function save(Attempt $attempt)
     {
-        $this->_em->persist($blockedIP);
+        $this->_em->persist($attempt);
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {}
@@ -81,10 +84,29 @@ class BlockedIPRepository extends EntityRepository implements PaginatorInterface
     public function removeOldRecords(\DateTime $time)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->delete($this->getEntityName(), 'i')
-            ->where($qb->expr()->lte('i', ':time'))
+        $qb->delete($this->getEntityName(), 'a')
+            ->where($qb->expr()->lte('a.createdAt', ':time'))
             ->setParameter('time', $time)
             ->getQuery()->execute()
         ;
+    }
+
+    /**
+     * @param string $fingerprint
+     * @return int
+     */
+    public function countAttempts(string $fingerprint)
+    {
+        $qb = $this->getPaginationCount();
+        $qb
+            ->where($qb->expr()->eq('a.fingerprint', ':fingerprint'))
+            ->setParameter('fingerprint', $fingerprint)
+        ;
+
+        try {
+            return (int)$qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException | NonUniqueResultException $e) {
+            return 0;
+        }
     }
 }
