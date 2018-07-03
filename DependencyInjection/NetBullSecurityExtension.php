@@ -44,7 +44,7 @@ class NetBullSecurityExtension extends Extension
             throw new InvalidFingerprintException($fingerprintService);
         }
 
-        $fingerprintDefinition = $container->getDefinition($config['fingerprint']);
+        $fingerprintDefinition = $container->getDefinition($fingerprintService);
         $service->replaceArgument(2, $fingerprintDefinition);
     }
 
