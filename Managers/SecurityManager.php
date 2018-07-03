@@ -70,7 +70,7 @@ class SecurityManager
      * @param Request $request
      * @return bool
      */
-    protected function storeAttempt(Request $request)
+    public function storeAttempt(Request $request)
     {
         $fingerprint = $this->computeFingerprint($request);
 
