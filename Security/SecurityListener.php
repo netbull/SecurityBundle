@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 use NetBull\SecurityBundle\Managers\SecurityManager;
+use NetBull\SecurityBundle\Exception\BannedException;
+use NetBull\SecurityBundle\Exception\InvalidRouteException;
 
 /**
  * Class SecurityListener
@@ -33,9 +35,9 @@ class SecurityListener
      * SecurityListener constructor.
      * @param SecurityManager $manager
      * @param RouterInterface $router
-     * @param string $bannedRoute
+     * @param null|string $bannedRoute
      */
-    public function __construct(SecurityManager $manager, RouterInterface $router, string $bannedRoute)
+    public function __construct(SecurityManager $manager, RouterInterface $router, ?string $bannedRoute = null)
     {
         $this->router = $router;
         $this->bannedRoute = $bannedRoute;
@@ -44,8 +46,8 @@ class SecurityListener
 
     /**
      * @param GetResponseEvent $event
-     *
-     * @return RedirectResponse|void
+     * @throws InvalidRouteException
+     * @throws BannedException
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
@@ -57,8 +59,14 @@ class SecurityListener
         $fingerprint = $this->manager->computeFingerprint($request);
 
         if ($this->manager->isBlocked($fingerprint)) {
-            $response = $this->getRedirectResponse($this->bannedRoute);
-            $event->setResponse($response);
+            if ($this->bannedRoute && $this->router->getRouteCollection()->get($this->bannedRoute)) {
+                $response = $this->getRedirectResponse($this->bannedRoute);
+                $event->setResponse($response);
+            } else if (null !== $this->bannedRoute) {
+                throw new InvalidRouteException($this->bannedRoute);
+            } else {
+                throw new BannedException();
+            }
         }
     }
 

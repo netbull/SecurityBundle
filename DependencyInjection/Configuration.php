@@ -21,7 +21,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('banned_route')->isRequired()->end()
+                ->scalarNode('banned_route')->end()
                 ->scalarNode('fingerprint')->defaultValue('netbull_security.fingerprint.browser')->end()
                 ->integerNode('attempts_threshold')
                     ->min(0)
