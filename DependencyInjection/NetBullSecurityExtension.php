@@ -35,12 +35,17 @@ class NetBullSecurityExtension extends Extension
         $service->replaceArgument(0, $config['max_attempts']);
         $service->replaceArgument(1, $config['attempts_threshold']);
 
-        if (!$container->hasDefinition($config['fingerprint'])) {
-            throw new InvalidFingerprintException($config['fingerprint']);
+        $fingerprintService = $config['fingerprint'];
+        if (in_array($fingerprintService, ['browser', 'ip'])) {
+            $fingerprintService = 'netbull_security.fingerprint.' . $fingerprintService;
         }
 
-        $fingerprintService = $container->getDefinition($config['fingerprint']);
-        $service->replaceArgument(2, $fingerprintService);
+        if (!$container->hasDefinition($fingerprintService)) {
+            throw new InvalidFingerprintException($fingerprintService);
+        }
+
+        $fingerprintDefinition = $container->getDefinition($config['fingerprint']);
+        $service->replaceArgument(2, $fingerprintDefinition);
     }
 
     /**
