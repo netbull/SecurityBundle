@@ -7,8 +7,6 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-use NetBull\SecurityBundle\Exception\InvalidFingerprintException;
-
 /**
  * Class NetBullSecurityExtension
  * @package NetBull\Security\DependencyInjection
@@ -40,12 +38,9 @@ class NetBullSecurityExtension extends Extension
             $fingerprintService = 'netbull_security.fingerprint.' . $fingerprintService;
         }
 
-        if (!$container->hasDefinition($fingerprintService)) {
-            throw new InvalidFingerprintException($fingerprintService);
-        }
-
-        $fingerprintDefinition = $container->getDefinition($fingerprintService);
-        $service->replaceArgument(2, $fingerprintDefinition);
+        $service->replaceArgument(2, $fingerprintService);
+        $service->replaceArgument(3, $config['garbage_collect']['probability']);
+        $service->replaceArgument(4, $config['garbage_collect']['divider']);
     }
 
     /**

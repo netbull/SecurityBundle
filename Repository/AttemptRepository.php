@@ -93,14 +93,21 @@ class AttemptRepository extends EntityRepository implements PaginatorInterface
 
     /**
      * @param string $fingerprint
+     * @param \DateTime $time
      * @return int
      */
-    public function countAttempts(string $fingerprint)
+    public function countAttempts(string $fingerprint, \DateTime $time)
     {
         $qb = $this->getPaginationCount();
         $qb
-            ->where($qb->expr()->eq('a.fingerprint', ':fingerprint'))
-            ->setParameter('fingerprint', $fingerprint)
+            ->where($qb->expr()->andX(
+                $qb->expr()->eq('a.fingerprint', ':fingerprint'),
+                $qb->expr()->gte('a.createdAt', ':time')
+            ))
+            ->setParameters([
+                'fingerprint' => $fingerprint,
+                'time' => $time,
+            ])
         ;
 
         try {

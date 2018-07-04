@@ -2,6 +2,8 @@
 
 namespace NetBull\SecurityBundle\Managers;
 
+use Psr\Log\LoggerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -10,6 +12,7 @@ use NetBull\SecurityBundle\Entity\Attempt;
 use NetBull\SecurityBundle\Repository\ListedRepository;
 use NetBull\SecurityBundle\Repository\AttemptRepository;
 use NetBull\SecurityBundle\Fingerprints\FingerprintInterface;
+use NetBull\SecurityBundle\Exception\InvalidFingerprintException;
 
 /**
  * Class SecurityManager
@@ -28,9 +31,24 @@ class SecurityManager
     protected $attemptsThreshold;
 
     /**
-     * @var FingerprintInterface
+     * @var string
      */
-    protected $fingerprint;
+    protected $fingerprintName;
+
+    /**
+     * @var int
+     */
+    protected $gcProbability;
+
+    /**
+     * @var int
+     */
+    protected $gcDivisor;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * @var AttemptRepository
@@ -48,28 +66,65 @@ class SecurityManager
     protected $list = [];
 
     /**
+     * @var FingerprintInterface[]
+     */
+    protected $fingerprints = [];
+
+    /**
      * SecurityManager constructor.
+     *
      * @param int $maxAttempts
      * @param int $attemptsThreshold
-     * @param FingerprintInterface $fingerprint
-     * @param AttemptRepository $attemptRepository
-     * @param ListedRepository $listedRepository
+     * @param null|string $fingerprintName
+     * @param int $gcProbability
+     * @param int $gcDivisor
+     * @param EntityManagerInterface $em
+     * @param LoggerInterface $logger
      */
-    public function __construct(int $maxAttempts, int $attemptsThreshold, FingerprintInterface $fingerprint, AttemptRepository $attemptRepository, ListedRepository $listedRepository)
+    public function __construct(int $maxAttempts, int $attemptsThreshold, ?string $fingerprintName, int $gcProbability, int $gcDivisor, EntityManagerInterface $em, LoggerInterface $logger)
     {
         $this->maxAttempts = $maxAttempts;
         $this->attemptsThreshold = $attemptsThreshold;
-        $this->fingerprint = $fingerprint;
-        $this->attemptRepository = $attemptRepository;
-        $this->listedRepository = $listedRepository;
+        $this->fingerprintName = $fingerprintName;
+        $this->gcProbability = $gcProbability;
+        $this->gcDivisor = $gcDivisor;
+        $this->logger = $logger;
+        $this->attemptRepository = $em->getRepository(Attempt::class);
+        $this->listedRepository = $em->getRepository(Listed::class);
 
         $this->refreshLists();
         $this->removeOldRecords();
     }
 
     /**
+     * @param string $name
+     * @param FingerprintInterface $fingerprint
+     */
+    public function addFingerprint(string $name, FingerprintInterface $fingerprint)
+    {
+        $this->fingerprints[$name] = $fingerprint;
+    }
+
+    /**
+     * @param null|string $name
+     * @return FingerprintInterface
+     * @throws InvalidFingerprintException
+     */
+    public function getFingerprint(?string $name = null)
+    {
+        $name = $name ?? $this->fingerprintName;
+
+        if (!isset($this->fingerprints[$name])) {
+            throw new InvalidFingerprintException($name);
+        }
+
+        return $this->fingerprints[$name];
+    }
+
+    /**
      * @param Request $request
      * @return bool
+     * @throws InvalidFingerprintException
      */
     public function storeAttempt(Request $request)
     {
@@ -84,6 +139,7 @@ class SecurityManager
         $attempt = $this->getAttempt($fingerprint);
         $this->attemptRepository->save($attempt);
 
+        $this->log(sprintf('Stored fingerprint "%s".', $fingerprint));
         return true;
     }
 
@@ -101,6 +157,7 @@ class SecurityManager
     {
         foreach ($this->list as $listedRecord) {
             if (false !== ip2long($fingerprint) && IpUtils::checkIp($fingerprint, $listedRecord['fingerprint'])) {
+                $this->log(sprintf('Fingerprint "%s" is empty.', $fingerprint));
                 return $listedRecord;
             } else if ($fingerprint === $listedRecord['fingerprint']) {
                 return $listedRecord;
@@ -117,6 +174,7 @@ class SecurityManager
     public function isBlocked(?string $fingerprint)
     {
         if (!$fingerprint) {
+            $this->log(sprintf('Fingerprint "%s" is empty.', $fingerprint));
             return false;
         }
 
@@ -125,11 +183,14 @@ class SecurityManager
         if ($listedRecord) {
             switch ($listedRecord['action']) {
                 case Listed::ACTION_ALLOW:
+                    $this->log(sprintf('Fingerprint "%s" is whitelisted.', $fingerprint));
                     return false;
                 case Listed::ACTION_DENY:
+                    $this->log(sprintf('Fingerprint "%s" is blacklisted.', $fingerprint));
                     return true;
             }
         } elseif ($this->isMaxAttemptsExceeded($fingerprint)) {
+            $this->log(sprintf('Fingerprint "%s" is blocked.', $fingerprint));
             return true;
         }
 
@@ -142,7 +203,16 @@ class SecurityManager
      */
     public function isMaxAttemptsExceeded(string $fingerprint)
     {
-        return $this->attemptRepository->countAttempts($fingerprint) >= $this->maxAttempts;
+        return $this->attemptRepository->countAttempts($fingerprint, $this->getFreshAttemptsTime()) >= $this->maxAttempts;
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldGC()
+    {
+        $percentChanceToGC = 100 * $this->gcProbability / $this->gcDivisor;
+        return rand(1, 100) < $percentChanceToGC;
     }
 
     ######################################################
@@ -150,6 +220,16 @@ class SecurityManager
     #                   Helper Methods                   #
     #                                                    #
     ######################################################
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws InvalidFingerprintException
+     */
+    public function computeFingerprint(Request $request)
+    {
+        return $this->getFingerprint()->compute($request);
+    }
 
     /**
      * Refreshes the lists
@@ -162,14 +242,27 @@ class SecurityManager
     }
 
     /**
+     * @return \DateTime
+     */
+    private function getFreshAttemptsTime()
+    {
+        $time = new \DateTime('now');
+        $time->modify('- ' . $this->attemptsThreshold . ' seconds');
+
+        return $time;
+    }
+
+    /**
      * Removes old attempts
      */
     private function removeOldRecords()
     {
-        $oldRecordsTime = new \DateTime('now');
-        $oldRecordsTime->modify('- ' . $this->attemptsThreshold . ' seconds');
+        if (!$this->shouldGC()) {
+            return;
+        }
 
-        $this->attemptRepository->removeOldRecords($oldRecordsTime);
+        $this->log(sprintf('Removing old attempts.'));
+        $this->attemptRepository->removeOldRecords($this->getFreshAttemptsTime());
     }
 
     /**
@@ -185,11 +278,10 @@ class SecurityManager
     }
 
     /**
-     * @param Request $request
-     * @return null|string
+     * @param string $message
      */
-    public function computeFingerprint(Request $request)
+    private function log(string $message)
     {
-        return $this->fingerprint->compute($request);
+        $this->logger->info("[ NS ] " . $message);
     }
 }

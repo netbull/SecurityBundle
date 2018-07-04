@@ -1,17 +1,7 @@
 services:
-    netbull_security.attempt_repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
-        arguments: ['NetBull\SecurityBundle\Entity\Attempt']
-
-    netbull_security.listed_repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
-        arguments: ['NetBull\SecurityBundle\Entity\Listed']
-
     netbull_security.manager:
         class: NetBull\SecurityBundle\Managers\SecurityManager
-        arguments: ['', '', '', '@netbull_security.attempt_repository', '@netbull_security.listed_repository']
+        arguments: ['', '', '', '', '', '@doctrine.orm.default_entity_manager', '@logger']
         public: true
 
     netbull_security.security_listener:
