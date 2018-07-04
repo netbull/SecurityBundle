@@ -28,19 +28,21 @@ class NetBullSecurityExtension extends Extension
 
         $service = $container->getDefinition('netbull_security.security_listener');
         $service->replaceArgument(2, $config['banned_route']);
+        $service->replaceArgument(3, $config['unbanned_route']);
 
         $service = $container->getDefinition('netbull_security.manager');
         $service->replaceArgument(0, $config['max_attempts']);
         $service->replaceArgument(1, $config['attempts_threshold']);
+        $service->replaceArgument(2, $config['ban_threshold']);
 
         $fingerprintService = $config['fingerprint'];
         if (in_array($fingerprintService, ['browser', 'ip'])) {
             $fingerprintService = 'netbull_security.fingerprint.' . $fingerprintService;
         }
 
-        $service->replaceArgument(2, $fingerprintService);
-        $service->replaceArgument(3, $config['garbage_collect']['probability']);
-        $service->replaceArgument(4, $config['garbage_collect']['divider']);
+        $service->replaceArgument(3, $fingerprintService);
+        $service->replaceArgument(4, $config['garbage_collect']['probability']);
+        $service->replaceArgument(5, $config['garbage_collect']['divider']);
     }
 
     /**

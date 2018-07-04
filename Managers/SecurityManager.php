@@ -2,11 +2,13 @@
 
 namespace NetBull\SecurityBundle\Managers;
 
+use NetBull\SecurityBundle\Repository\BanRepository;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\Request;
 
+use NetBull\SecurityBundle\Entity\Ban;
 use NetBull\SecurityBundle\Entity\Listed;
 use NetBull\SecurityBundle\Entity\Attempt;
 use NetBull\SecurityBundle\Repository\ListedRepository;
@@ -29,6 +31,11 @@ class SecurityManager
      * @var int
      */
     protected $attemptsThreshold;
+
+    /**
+     * @var int
+     */
+    protected $banThreshold;
 
     /**
      * @var string
@@ -61,6 +68,11 @@ class SecurityManager
     protected $listedRepository;
 
     /**
+     * @var BanRepository
+     */
+    protected $banRepository;
+
+    /**
      * @var array
      */
     protected $list = [];
@@ -75,22 +87,25 @@ class SecurityManager
      *
      * @param int $maxAttempts
      * @param int $attemptsThreshold
+     * @param int $banThreshold
      * @param null|string $fingerprintName
      * @param int $gcProbability
      * @param int $gcDivisor
      * @param EntityManagerInterface $em
      * @param LoggerInterface $logger
      */
-    public function __construct(int $maxAttempts, int $attemptsThreshold, ?string $fingerprintName, int $gcProbability, int $gcDivisor, EntityManagerInterface $em, LoggerInterface $logger)
+    public function __construct(int $maxAttempts, int $attemptsThreshold, int $banThreshold, ?string $fingerprintName, int $gcProbability, int $gcDivisor, EntityManagerInterface $em, LoggerInterface $logger)
     {
         $this->maxAttempts = $maxAttempts;
         $this->attemptsThreshold = $attemptsThreshold;
+        $this->banThreshold = $banThreshold;
         $this->fingerprintName = $fingerprintName;
         $this->gcProbability = $gcProbability;
         $this->gcDivisor = $gcDivisor;
         $this->logger = $logger;
         $this->attemptRepository = $em->getRepository(Attempt::class);
         $this->listedRepository = $em->getRepository(Listed::class);
+        $this->banRepository = $em->getRepository(Ban::class);
 
         $this->refreshLists();
         $this->removeOldRecords();
@@ -140,6 +155,14 @@ class SecurityManager
         $this->attemptRepository->save($attempt);
 
         $this->log(sprintf('Stored fingerprint "%s".', $fingerprint));
+
+        if ($this->isMaxAttemptsExceeded($fingerprint)) {
+            $ban = new Ban();
+            $ban->setFingerprint($fingerprint);
+            $ban->setExpireAt($this->getBanExpirationTime());
+            $this->banRepository->save($ban);
+        }
+
         return true;
     }
 
@@ -189,7 +212,7 @@ class SecurityManager
                     $this->log(sprintf('Fingerprint "%s" is blacklisted.', $fingerprint));
                     return true;
             }
-        } elseif ($this->isMaxAttemptsExceeded($fingerprint)) {
+        } elseif ($this->banRepository->isBanned($fingerprint)) {
             $this->log(sprintf('Fingerprint "%s" is blocked.', $fingerprint));
             return true;
         }
@@ -246,9 +269,16 @@ class SecurityManager
      */
     private function getFreshAttemptsTime()
     {
-        $time = new \DateTime('now');
-        $time->modify('- ' . $this->attemptsThreshold . ' seconds');
+        $time = new \DateTime('- ' . $this->attemptsThreshold . ' seconds');
+        return $time;
+    }
 
+    /**
+     * @return \DateTime
+     */
+    private function getBanExpirationTime()
+    {
+        $time = new \DateTime('+ ' . $this->banThreshold . ' seconds');
         return $time;
     }
 

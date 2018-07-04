@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('banned_route')->defaultNull()->end()
+                ->scalarNode('unbanned_route')->defaultNull()->end()
                 ->scalarNode('fingerprint')->defaultValue('netbull_security.fingerprint.browser')->end()
                 ->arrayNode('garbage_collect')
                     ->addDefaultsIfNotSet()
@@ -30,14 +31,9 @@ class Configuration implements ConfigurationInterface
                         ->integerNode('divider')->min(0)->defaultValue(1000)->end()
                     ->end()
                 ->end()
-                ->integerNode('attempts_threshold')
-                    ->min(0)
-                    ->defaultValue(300)
-                ->end()
-                ->integerNode('max_attempts')
-                    ->min(0)
-                    ->defaultValue(5)
-                ->end()
+                ->integerNode('attempts_threshold')->min(0)->defaultValue(300)->end()
+                ->integerNode('ban_threshold')->min(0)->defaultValue(300)->end()
+                ->integerNode('max_attempts')->min(0)->defaultValue(5)->end()
             ->end()
         ;
 

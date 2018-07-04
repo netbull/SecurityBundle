@@ -1,11 +1,11 @@
 services:
     netbull_security.manager:
         class: NetBull\SecurityBundle\Managers\SecurityManager
-        arguments: ['', '', '', '', '', '@doctrine.orm.default_entity_manager', '@logger']
+        arguments: ['', '', '', '', '', '', '@doctrine.orm.default_entity_manager', '@logger']
         public: true
 
     netbull_security.security_listener:
         class: NetBull\SecurityBundle\Security\SecurityListener
-        arguments: ['@netbull_security.manager', '@router', '']
+        arguments: ['@netbull_security.manager', '@router', '', '']
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 0 }
