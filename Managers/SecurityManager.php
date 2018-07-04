@@ -2,7 +2,6 @@
 
 namespace NetBull\SecurityBundle\Managers;
 
-use NetBull\SecurityBundle\Repository\BanRepository;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\IpUtils;
@@ -11,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use NetBull\SecurityBundle\Entity\Ban;
 use NetBull\SecurityBundle\Entity\Listed;
 use NetBull\SecurityBundle\Entity\Attempt;
+use NetBull\SecurityBundle\Repository\BanRepository;
 use NetBull\SecurityBundle\Repository\ListedRepository;
 use NetBull\SecurityBundle\Repository\AttemptRepository;
 use NetBull\SecurityBundle\Fingerprints\FingerprintInterface;
@@ -81,6 +81,11 @@ class SecurityManager
      * @var FingerprintInterface[]
      */
     protected $fingerprints = [];
+
+    /**
+     * @var Request
+     */
+    protected $request;
 
     /**
      * SecurityManager constructor.
@@ -182,6 +187,8 @@ class SecurityManager
             if (false !== ip2long($fingerprint) && IpUtils::checkIp($fingerprint, $listedRecord['fingerprint'])) {
                 $this->log(sprintf('Fingerprint "%s" is empty.', $fingerprint));
                 return $listedRecord;
+            } else if (null !== $this->request && IpUtils::checkIp($this->request->getClientIp(), $listedRecord['fingerprint'])) {
+                return $listedRecord;
             } else if ($fingerprint === $listedRecord['fingerprint']) {
                 return $listedRecord;
             }
@@ -251,6 +258,8 @@ class SecurityManager
      */
     public function computeFingerprint(Request $request)
     {
+        $this->request = $request;
+
         return $this->getFingerprint()->compute($request);
     }
 
