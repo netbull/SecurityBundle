@@ -17,7 +17,7 @@ interface FingerprintInterface
     public function compute(?Request $request = null);
 
     /**
-     * @return mixed
+     * @return null|array
      */
     public function getFingerprintData();
 }
