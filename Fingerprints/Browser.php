@@ -51,7 +51,7 @@ class Browser extends BaseFingerprint
             return null;
         }
 
-        $this->data = json_decode($result);
+        $this->data = json_decode($result, true);
 
         return md5($result);
     }
