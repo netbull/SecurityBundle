@@ -11,9 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class BaseFingerprint implements FingerprintInterface
 {
     /**
-     * @var null
+     * @var array
      */
-    protected $data = null;
+    protected $data = [];
 
     /**
      * {@inheritdoc}

@@ -37,9 +37,8 @@ abstract class BaseListing
     private $ip;
 
     /**
-     * @var null|string
+     * @var null|array
      *
-     * @Assert\Ip
      * @ORM\Column(type="json", nullable=true)
      */
     private $metaData;
@@ -101,17 +100,17 @@ abstract class BaseListing
     }
 
     /**
-     * @return null|string
+     * @return null|array
      */
-    public function getMetaData(): ?string
+    public function getMetaData(): ?array
     {
         return $this->metaData;
     }
 
     /**
-     * @param null|string $metaData
+     * @param null|array $metaData
      */
-    public function setMetaData(?string $metaData): void
+    public function setMetaData(?array $metaData): void
     {
         $this->metaData = $metaData;
     }
