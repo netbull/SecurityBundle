@@ -157,13 +157,16 @@ class SecurityManager
         }
 
         $attempt = $this->getAttempt($fingerprint);
+        $attempt->setIp($request->getClientIp());
+        $attempt->setMetaData($this->getFingerprint()->getFingerprintData());
+
         $this->attemptRepository->save($attempt);
 
         $this->log(sprintf('Stored fingerprint "%s".', $fingerprint));
 
         if ($this->isMaxAttemptsExceeded($fingerprint)) {
             $ban = new Ban();
-            $ban->setFingerprint($fingerprint);
+            $ban->copy($attempt);
             $ban->setExpireAt($this->getBanExpirationTime());
             $this->banRepository->save($ban);
         }

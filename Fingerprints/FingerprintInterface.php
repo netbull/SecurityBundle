@@ -15,4 +15,9 @@ interface FingerprintInterface
      * @return mixed
      */
     public function compute(?Request $request = null);
+
+    /**
+     * @return mixed
+     */
+    public function getFingerprintData();
 }

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class Ip
  * @package NetBull\SecurityBundle\Fingerprints
  */
-class Ip implements FingerprintInterface
+class Ip extends BaseFingerprint
 {
     /**
      * {@inheritdoc}

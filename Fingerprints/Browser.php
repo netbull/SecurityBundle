@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class Browser
  * @package NetBull\SecurityBundle\Fingerprints
  */
-class Browser implements FingerprintInterface
+class Browser extends BaseFingerprint
 {
     /**
      * Cache dir for the Browscap
@@ -46,11 +46,11 @@ class Browser implements FingerprintInterface
         $bc = new Browscap($cache, $this->logger);
 
         try {
-            $result = $bc->getBrowser();
+            $this->data = $bc->getBrowser();
         } catch (Exception $e) {
             return null;
         }
 
-        return md5(json_encode($result));
+        return md5(json_encode($this->data));
     }
 }

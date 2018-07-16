@@ -3,9 +3,9 @@
 namespace NetBull\SecurityBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\NonUniqueResultException;
 
 use NetBull\SecurityBundle\Entity\Attempt;
 use NetBull\CoreBundle\Paginator\PaginatorInterface;

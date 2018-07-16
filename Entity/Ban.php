@@ -3,7 +3,6 @@
 namespace NetBull\SecurityBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Ban
@@ -11,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="security_bans")
  * @ORM\Entity(repositoryClass="NetBull\SecurityBundle\Repository\BanRepository")
  */
-class Ban
+class Ban extends BaseListing
 {
     /**
      * @var integer
@@ -23,21 +22,6 @@ class Ban
     private $id;
 
     /**
-     * @var string
-     *
-     * @Assert\NotBlank
-     * @ORM\Column(type="string")
-     */
-    private $fingerprint;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -45,59 +29,11 @@ class Ban
     private $expireAt;
 
     /**
-     * Attempt constructor.
-     */
-    public function __construct()
-    {
-        $this->createdAt = new \DateTime('now');
-    }
-
-    /**
      * @return int
      */
     public function getId(): int
     {
         return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFingerprint(): string
-    {
-        return $this->fingerprint;
-    }
-
-    /**
-     * @param string $fingerprint
-     */
-    public function setFingerprint(string $fingerprint): void
-    {
-        $this->fingerprint = $fingerprint;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt(): \DateTime
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @param \DateTime $createdAt
-     */
-    public function setCreatedAt(\DateTime $createdAt): void
-    {
-        $this->createdAt = $createdAt;
     }
 
     /**
