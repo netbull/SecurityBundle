@@ -164,13 +164,13 @@ class SecurityManager
 
         $this->log(sprintf('Stored fingerprint "%s".', $fingerprint));
 
+
         if ($this->isMaxAttemptsExceeded($fingerprint)) {
             $ban = new Ban();
             $ban->copy($attempt);
             $ban->setExpireAt($this->getBanExpirationTime());
             $this->banRepository->save($ban);
         }
-
         return true;
     }
 

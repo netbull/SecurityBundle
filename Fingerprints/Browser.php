@@ -46,11 +46,11 @@ class Browser extends BaseFingerprint
         $bc = new Browscap($cache, $this->logger);
 
         try {
-            $this->data = $bc->getBrowser();
+            $this->data = json_encode($bc->getBrowser());
         } catch (Exception $e) {
             return null;
         }
 
-        return md5(json_encode($this->data));
+        return md5($this->data);
     }
 }
