@@ -17,7 +17,7 @@ class AttachFingerprintCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $manager = $container->getDefinition('netbull_security.manager');
+        $manager = $container->getDefinition('NetBull\SecurityBundle\Managers\SecurityManager');
         foreach ($container->findTaggedServiceIds('netbull_security.fingerprint') as $id => $attributes) {
             $manager->addMethodCall('addFingerprint', [$id, new Reference($id)]);
         }

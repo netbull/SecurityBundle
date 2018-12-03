@@ -30,7 +30,7 @@ class NetBullSecurityExtension extends Extension
         $service->replaceArgument(2, $config['banned_route']);
         $service->replaceArgument(3, $config['unbanned_route']);
 
-        $service = $container->getDefinition('netbull_security.manager');
+        $service = $container->getDefinition('NetBull\SecurityBundle\Managers\SecurityManager');
         $service->replaceArgument(0, $config['max_attempts']);
         $service->replaceArgument(1, $config['attempts_threshold']);
         $service->replaceArgument(2, $config['ban_threshold']);
