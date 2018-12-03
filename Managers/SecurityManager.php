@@ -145,6 +145,7 @@ class SecurityManager
      * @param Request $request
      * @return bool
      * @throws InvalidFingerprintException
+     * @throws \Doctrine\ORM\ORMException
      */
     public function storeAttempt(Request $request)
     {

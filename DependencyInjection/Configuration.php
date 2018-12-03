@@ -23,7 +23,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('banned_route')->defaultNull()->end()
                 ->scalarNode('unbanned_route')->defaultNull()->end()
-                ->scalarNode('fingerprint')->defaultValue('netbull_security.fingerprint.browser')->end()
+                ->scalarNode('fingerprint')->defaultValue('NetBull\SecurityBundle\Fingerprints\Browser')->end()
                 ->arrayNode('garbage_collect')
                     ->addDefaultsIfNotSet()
                     ->children()
