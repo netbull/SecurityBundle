@@ -4,15 +4,15 @@ namespace NetBull\SecurityBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
+use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
 
 use NetBull\SecurityBundle\Entity\Listed;
-use NetBull\CoreBundle\Paginator\PaginatorInterface;
 
 /**
  * Class ListedRepository
  * @package NetBull\SecurityBundle\Repository
  */
-class ListedRepository extends EntityRepository implements PaginatorInterface
+class ListedRepository extends EntityRepository implements PaginatorRepositoryInterface
 {
     /**
      * {@inheritdoc}
@@ -67,6 +67,7 @@ class ListedRepository extends EntityRepository implements PaginatorInterface
 
     /**
      * @param Listed $listed
+     * @throws \Doctrine\ORM\ORMException
      */
     public function save(Listed $listed)
     {

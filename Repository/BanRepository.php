@@ -3,18 +3,17 @@
 namespace NetBull\SecurityBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
+use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
 
 use NetBull\SecurityBundle\Entity\Ban;
-use NetBull\CoreBundle\Paginator\PaginatorInterface;
 
 /**
  * Class BanRepository
  * @package NetBull\SecurityBundle\Repository
  */
-class BanRepository extends EntityRepository implements PaginatorInterface
+class BanRepository extends EntityRepository implements PaginatorRepositoryInterface
 {
     /**
      * {@inheritdoc}
@@ -69,6 +68,7 @@ class BanRepository extends EntityRepository implements PaginatorInterface
 
     /**
      * @param Ban $attempt
+     * @throws \Doctrine\ORM\ORMException
      */
     public function save(Ban $attempt)
     {
@@ -116,7 +116,7 @@ class BanRepository extends EntityRepository implements PaginatorInterface
 
         try {
             return 0 < (int)$qb->getQuery()->getSingleScalarResult();
-        } catch (NoResultException | NonUniqueResultException $e) {
+        } catch (NonUniqueResultException $e) {
             return false;
         }
     }

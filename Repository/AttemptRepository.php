@@ -3,18 +3,17 @@
 namespace NetBull\SecurityBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\NonUniqueResultException;
+use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
 
 use NetBull\SecurityBundle\Entity\Attempt;
-use NetBull\CoreBundle\Paginator\PaginatorInterface;
 
 /**
  * Class AttemptRepository
  * @package NetBull\SecurityBundle\Repository
  */
-class AttemptRepository extends EntityRepository implements PaginatorInterface
+class AttemptRepository extends EntityRepository implements PaginatorRepositoryInterface
 {
     /**
      * {@inheritdoc}
@@ -69,6 +68,7 @@ class AttemptRepository extends EntityRepository implements PaginatorInterface
 
     /**
      * @param Attempt $attempt
+     * @throws \Doctrine\ORM\ORMException
      */
     public function save(Attempt $attempt)
     {
@@ -112,7 +112,7 @@ class AttemptRepository extends EntityRepository implements PaginatorInterface
 
         try {
             return (int)$qb->getQuery()->getSingleScalarResult();
-        } catch (NoResultException | NonUniqueResultException $e) {
+        } catch (NonUniqueResultException $e) {
             return 0;
         }
     }

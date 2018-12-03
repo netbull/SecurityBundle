@@ -1,6 +1,5 @@
 services:
-    netbull_security.manager:
-        class: NetBull\SecurityBundle\Managers\SecurityManager
+    NetBull\SecurityBundle\Managers\SecurityManager:
         arguments: ['', '', '', '', '', '', '@doctrine.orm.default_entity_manager', '@logger']
         public: true
 
