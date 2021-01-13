@@ -2,7 +2,7 @@
 
 namespace NetBull\SecurityBundle\Security;
 
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use NetBull\SecurityBundle\Managers\SecurityManager;
@@ -52,11 +52,11 @@ class SecurityListener
     }
 
     /**
-     * @param ResponseEvent $event
+     * @param RequestEvent $event
      * @throws InvalidRouteException
      * @throws InvalidFingerprintException
      */
-    public function onKernelRequest(ResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
         if (!$event->isMasterRequest()) {
