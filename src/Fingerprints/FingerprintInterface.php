@@ -19,5 +19,5 @@ interface FingerprintInterface
     /**
      * @return null|array
      */
-    public function getFingerprintData();
+    public function getFingerprintData(): ?array;
 }

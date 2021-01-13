@@ -2,11 +2,13 @@
 
 namespace NetBull\SecurityBundle\Managers;
 
+use DateTime;
+use Doctrine\ORM\ORMException;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\Request;
-
 use NetBull\SecurityBundle\Entity\Ban;
 use NetBull\SecurityBundle\Entity\Listed;
 use NetBull\SecurityBundle\Entity\Attempt;
@@ -130,7 +132,7 @@ class SecurityManager
      * @return FingerprintInterface
      * @throws InvalidFingerprintException
      */
-    public function getFingerprint(?string $name = null)
+    public function getFingerprint(?string $name = null): FingerprintInterface
     {
         $name = $name ?? $this->fingerprintName;
 
@@ -145,9 +147,9 @@ class SecurityManager
      * @param Request $request
      * @return bool
      * @throws InvalidFingerprintException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
-    public function storeAttempt(Request $request)
+    public function storeAttempt(Request $request): bool
     {
         $fingerprint = $this->computeFingerprint($request);
 
@@ -203,7 +205,7 @@ class SecurityManager
      * @param null|string $fingerprint
      * @return bool
      */
-    public function isBlocked(?string $fingerprint)
+    public function isBlocked(?string $fingerprint): bool
     {
         if (!$fingerprint) {
             $this->log(sprintf('Fingerprint "%s" is empty.', $fingerprint));
@@ -233,7 +235,7 @@ class SecurityManager
      * @param string $fingerprint
      * @return bool
      */
-    public function isMaxAttemptsExceeded(string $fingerprint)
+    public function isMaxAttemptsExceeded(string $fingerprint): bool
     {
         return $this->attemptRepository->countAttempts($fingerprint, $this->getFreshAttemptsTime()) >= $this->maxAttempts;
     }
@@ -241,7 +243,7 @@ class SecurityManager
     /**
      * @return bool
      */
-    private function shouldGC()
+    private function shouldGC(): bool
     {
         $percentChanceToGC = 100 * $this->gcProbability / $this->gcDivisor;
         return rand(1, 100) < $percentChanceToGC;
@@ -274,20 +276,28 @@ class SecurityManager
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    private function getFreshAttemptsTime()
+    private function getFreshAttemptsTime(): DateTime
     {
-        $time = new \DateTime('- ' . $this->attemptsThreshold . ' seconds');
+        $time = null;
+        try {
+            $time = new DateTime('- '.$this->attemptsThreshold.' seconds');
+        } catch (Exception $e) {}
+
         return $time;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    private function getBanExpirationTime()
+    private function getBanExpirationTime(): DateTime
     {
-        $time = new \DateTime('+ ' . $this->banThreshold . ' seconds');
+        $time = null;
+        try {
+            $time = new DateTime('+ '.$this->banThreshold.' seconds');
+        } catch (Exception $e) {}
+
         return $time;
     }
 
@@ -308,7 +318,7 @@ class SecurityManager
      * @param $fingerprint
      * @return Attempt
      */
-    private function getAttempt($fingerprint)
+    private function getAttempt($fingerprint): Attempt
     {
         $attempt = new Attempt();
         $attempt->setFingerprint($fingerprint);

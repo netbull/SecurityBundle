@@ -14,7 +14,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('netbull_security');
         $rootNode = $treeBuilder->getRootNode();
@@ -34,8 +34,7 @@ class Configuration implements ConfigurationInterface
                 ->integerNode('attempts_threshold')->min(0)->defaultValue(300)->end()
                 ->integerNode('ban_threshold')->min(0)->defaultValue(300)->end()
                 ->integerNode('max_attempts')->min(0)->defaultValue(5)->end()
-            ->end()
-        ;
+            ->end();
 
         return $treeBuilder;
     }

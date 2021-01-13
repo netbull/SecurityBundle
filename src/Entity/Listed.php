@@ -7,10 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Listed
- *
  * @ORM\Table(name="security_listed")
- *
  * @UniqueEntity(fields="fingerprint", message="Sorry, you already use this Fingerprint.")
  * @ORM\Entity(repositoryClass="NetBull\SecurityBundle\Repository\ListedRepository")
  */

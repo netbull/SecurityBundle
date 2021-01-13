@@ -2,10 +2,9 @@
 
 namespace NetBull\SecurityBundle\Security;
 
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-
 use NetBull\SecurityBundle\Managers\SecurityManager;
 use NetBull\SecurityBundle\Exception\BannedException;
 use NetBull\SecurityBundle\Exception\InvalidRouteException;
@@ -53,11 +52,11 @@ class SecurityListener
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param ResponseEvent $event
      * @throws InvalidRouteException
      * @throws InvalidFingerprintException
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(ResponseEvent $event)
     {
         $request = $event->getRequest();
         if (!$event->isMasterRequest()) {
@@ -95,10 +94,9 @@ class SecurityListener
 
     /**
      * @param string $routeName
-     *
      * @return RedirectResponse
      */
-    protected function getRedirectResponse($routeName)
+    protected function getRedirectResponse(string $routeName): RedirectResponse
     {
         return new RedirectResponse(
             $this->router->generate($routeName)

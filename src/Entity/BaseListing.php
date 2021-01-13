@@ -2,6 +2,7 @@
 
 namespace NetBull\SecurityBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -14,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class BaseListing
 {
     /**
-     * @var string
+     * @var string|null
      *
      * @Assert\NotBlank
      * @ORM\Column(type="string")
@@ -22,14 +23,14 @@ abstract class BaseListing
     private $fingerprint;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
-     * @var null|string
+     * @var string|null
      *
      * @Assert\Ip
      * @ORM\Column(type="string", nullable=true)
@@ -37,7 +38,7 @@ abstract class BaseListing
     private $ip;
 
     /**
-     * @var null|array
+     * @var array|null
      *
      * @ORM\Column(type="json", nullable=true)
      */
@@ -48,43 +49,49 @@ abstract class BaseListing
      */
     public function __construct()
     {
-        $this->createdAt = new \DateTime('now');
+        $this->createdAt = new DateTime('now');
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFingerprint(): string
+    public function getFingerprint(): ?string
     {
         return $this->fingerprint;
     }
 
     /**
-     * @param string $fingerprint
+     * @param string|null $fingerprint
+     * @return BaseListing
      */
-    public function setFingerprint(string $fingerprint): void
+    public function setFingerprint(?string $fingerprint): BaseListing
     {
         $this->fingerprint = $fingerprint;
+
+        return $this;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
     /**
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
+     * @return BaseListing
      */
-    public function setCreatedAt(\DateTime $createdAt): void
+    public function setCreatedAt(DateTime $createdAt): BaseListing
     {
         $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getIp(): ?string
     {
@@ -92,15 +99,18 @@ abstract class BaseListing
     }
 
     /**
-     * @param null|string $ip
+     * @param string|null $ip
+     * @return BaseListing
      */
-    public function setIp(?string $ip): void
+    public function setIp(?string $ip): BaseListing
     {
         $this->ip = $ip;
+
+        return $this;
     }
 
     /**
-     * @return null|array
+     * @return array|null
      */
     public function getMetaData(): ?array
     {
@@ -108,19 +118,22 @@ abstract class BaseListing
     }
 
     /**
-     * @param null|array $metaData
+     * @param array|null $metaData
+     * @return BaseListing
      */
-    public function setMetaData(?array $metaData): void
+    public function setMetaData(?array $metaData): BaseListing
     {
         $this->metaData = $metaData;
+
+        return $this;
     }
 
     ######################################################
-    #                                                    #
     #                   Helper Methods                   #
-    #                                                    #
     ######################################################
-
+    /**
+     * @param BaseListing $listing
+     */
     public function copy(BaseListing $listing)
     {
         $this->setFingerprint($listing->getFingerprint());

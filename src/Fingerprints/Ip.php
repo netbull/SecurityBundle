@@ -13,7 +13,7 @@ class Ip extends BaseFingerprint
     /**
      * {@inheritdoc}
      */
-    public function compute(?Request $request = null)
+    public function compute(?Request $request = null): ?string
     {
         if ($request && $request->getClientIp()) {
             return $request->getClientIp();

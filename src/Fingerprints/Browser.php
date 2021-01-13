@@ -38,7 +38,7 @@ class Browser extends BaseFingerprint
     /**
      * {@inheritdoc}
      */
-    public function compute(?Request $request = null)
+    public function compute(?Request $request = null): ?string
     {
         $fileCache = new \Doctrine\Common\Cache\FilesystemCache($this->cacheDir);
         $cache = new \Roave\DoctrineSimpleCache\SimpleCacheAdapter($fileCache);

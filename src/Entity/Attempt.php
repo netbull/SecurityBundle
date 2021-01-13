@@ -5,15 +5,13 @@ namespace NetBull\SecurityBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Attempt
- *
  * @ORM\Table(name="security_attempts")
  * @ORM\Entity(repositoryClass="NetBull\SecurityBundle\Repository\AttemptRepository")
  */
 class Attempt extends BaseListing
 {
     /**
-     * @var integer
+     * @var int|null
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -22,9 +20,9 @@ class Attempt extends BaseListing
     private $id;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -36,10 +34,4 @@ class Attempt extends BaseListing
     {
         $this->id = $id;
     }
-
-    ######################################################
-    #                                                    #
-    #                   Helper Methods                   #
-    #                                                    #
-    ######################################################
 }

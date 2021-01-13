@@ -2,9 +2,9 @@
 
 namespace NetBull\SecurityBundle;
 
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-
 use NetBull\SecurityBundle\DependencyInjection\NetBullSecurityExtension;
 use NetBull\SecurityBundle\DependencyInjection\Compiler\AttachFingerprintCompilerPass;
 
@@ -25,7 +25,7 @@ class NetBullSecurityBundle extends Bundle
     }
 
     /**
-     * @return NetBullSecurityExtension|null|\Symfony\Component\DependencyInjection\Extension\ExtensionInterface
+     * @return NetBullSecurityExtension|null|ExtensionInterface
      */
     public function getContainerExtension()
     {

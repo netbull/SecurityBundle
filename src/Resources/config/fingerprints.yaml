@@ -1,6 +1,6 @@
 services:
     NetBull\SecurityBundle\Fingerprints\Browser:
-        arguments: ['%kernel.project_dir%', '@logger']
+        arguments: [ '%kernel.project_dir%', '@logger' ]
         tags: { name: netbull_security.fingerprint }
 
     NetBull\SecurityBundle\Fingerprints\Ip:

@@ -2,6 +2,8 @@
 
 namespace NetBull\SecurityBundle\DependencyInjection;
 
+use Exception;
+use NetBull\SecurityBundle\Managers\SecurityManager;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -9,13 +11,13 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class NetBullSecurityExtension
- * @package NetBull\Security\DependencyInjection
+ * @package NetBull\SecurityBundle\DependencyInjection
  */
 class NetBullSecurityExtension extends Extension
 {
     /**
      * {@inheritdoc}
-     * @throws \Exception
+     * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -30,7 +32,7 @@ class NetBullSecurityExtension extends Extension
         $service->replaceArgument(2, $config['banned_route']);
         $service->replaceArgument(3, $config['unbanned_route']);
 
-        $service = $container->getDefinition('NetBull\SecurityBundle\Managers\SecurityManager');
+        $service = $container->getDefinition(SecurityManager::class);
         $service->replaceArgument(0, $config['max_attempts']);
         $service->replaceArgument(1, $config['attempts_threshold']);
         $service->replaceArgument(2, $config['ban_threshold']);
@@ -48,7 +50,7 @@ class NetBullSecurityExtension extends Extension
     /**
      * @return string
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'netbull_security';
     }

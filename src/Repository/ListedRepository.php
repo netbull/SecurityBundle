@@ -4,8 +4,9 @@ namespace NetBull\SecurityBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
-
 use NetBull\SecurityBundle\Entity\Listed;
 
 /**
@@ -17,13 +18,10 @@ class ListedRepository extends EntityRepository implements PaginatorRepositoryIn
     /**
      * {@inheritdoc}
      */
-    public function getPaginationCount(array $params = [])
+    public function getPaginationCount(array $params = []): QueryBuilder
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb
-            ->select($qb->expr()->countDistinct('l'))
-            ->from($this->getEntityName(), 'l')
-        ;
+        $qb = $this->createQueryBuilder('l');
+        $qb->select($qb->expr()->countDistinct('l'));
 
         if (isset($params['query']) && '' !== $params['query']) {
             $qb
@@ -32,8 +30,7 @@ class ListedRepository extends EntityRepository implements PaginatorRepositoryIn
                     $qb->expr()->like('l.fingerprint', ':qL')
                 ))
                 ->setParameter('qE', $params['query'])
-                ->setParameter('qL', '%' . trim($params['query']) . '%')
-            ;
+                ->setParameter('qL', '%' . trim($params['query']) . '%');
         }
 
         return $qb;
@@ -42,7 +39,7 @@ class ListedRepository extends EntityRepository implements PaginatorRepositoryIn
     /**
      * {@inheritdoc}
      */
-    public function getPaginationIds(array $params = [])
+    public function getPaginationIds(array $params = []): QueryBuilder
     {
         $qb = $this->getPaginationCount($params);
         $qb->resetDQLPart('select');
@@ -54,20 +51,17 @@ class ListedRepository extends EntityRepository implements PaginatorRepositoryIn
     /**
      * {@inheritdoc}
      */
-    public function getPaginationQuery(array $params = [])
+    public function getPaginationQuery(array $params = []): QueryBuilder
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb
-            ->select('partial l.{id,fingerprint,action}')
-            ->from($this->getEntityName(), 'l')
-        ;
+        $qb = $this->createQueryBuilder('l');
+        $qb->select('partial l.{id,fingerprint,action}');
 
         return $qb;
     }
 
     /**
      * @param Listed $listed
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function save(Listed $listed)
     {
@@ -81,7 +75,7 @@ class ListedRepository extends EntityRepository implements PaginatorRepositoryIn
      * @param null|string $action
      * @return array
      */
-    public function getAll(?string $action = null)
+    public function getAll(?string $action = null): array
     {
         $qb = $this->createQueryBuilder('l');
 
@@ -91,8 +85,7 @@ class ListedRepository extends EntityRepository implements PaginatorRepositoryIn
 
         $qb
             ->where($qb->expr()->eq('l.action', ':action'))
-            ->setParameter('action', $action)
-        ;
+            ->setParameter('action', $action);
 
         return $qb->getQuery()->getArrayResult();
     }

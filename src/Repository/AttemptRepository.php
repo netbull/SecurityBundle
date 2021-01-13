@@ -2,11 +2,14 @@
 
 namespace NetBull\SecurityBundle\Repository;
 
+use DateTime;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
-
 use NetBull\SecurityBundle\Entity\Attempt;
 
 /**
@@ -18,13 +21,10 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function getPaginationCount(array $params = [])
+    public function getPaginationCount(array $params = []): QueryBuilder
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb
-            ->select($qb->expr()->countDistinct('a'))
-            ->from($this->getEntityName(), 'a')
-        ;
+        $qb = $this->createQueryBuilder('a');
+        $qb->select($qb->expr()->countDistinct('a'));
 
         if (isset($params['query']) && '' !== $params['query']) {
             $qb
@@ -33,8 +33,7 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
                     $qb->expr()->like('a.fingerprint', ':qL')
                 ))
                 ->setParameter('qE', $params['query'])
-                ->setParameter('qL', '%' . trim($params['query']) . '%')
-            ;
+                ->setParameter('qL', '%' . trim($params['query']) . '%');
         }
 
         return $qb;
@@ -43,7 +42,7 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function getPaginationIds(array $params = [])
+    public function getPaginationIds(array $params = []): QueryBuilder
     {
         $qb = $this->getPaginationCount($params);
         $qb->resetDQLPart('select');
@@ -55,20 +54,17 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function getPaginationQuery(array $params = [])
+    public function getPaginationQuery(array $params = []): QueryBuilder
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb
-            ->select('partial a.{id,fingerprint,createdAt}')
-            ->from($this->getEntityName(), 'a')
-        ;
+        $qb = $this->createQueryBuilder('a');
+        $qb->select('partial a.{id,fingerprint,createdAt}');
 
         return $qb;
     }
 
     /**
      * @param Attempt $attempt
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function save(Attempt $attempt)
     {
@@ -79,24 +75,23 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
     }
 
     /**
-     * @param \DateTime $time
+     * @param DateTime $time
      */
-    public function removeOldRecords(\DateTime $time)
+    public function removeOldRecords(DateTime $time)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->delete($this->getEntityName(), 'a')
             ->where($qb->expr()->lte('a.createdAt', ':time'))
             ->setParameter('time', $time)
-            ->getQuery()->execute()
-        ;
+            ->getQuery()->execute();
     }
 
     /**
      * @param string $fingerprint
-     * @param \DateTime $time
+     * @param DateTime $time
      * @return int
      */
-    public function countAttempts(string $fingerprint, \DateTime $time)
+    public function countAttempts(string $fingerprint, DateTime $time): int
     {
         $qb = $this->getPaginationCount();
         $qb
@@ -107,12 +102,11 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
             ->setParameters([
                 'fingerprint' => $fingerprint,
                 'time' => $time,
-            ])
-        ;
+            ]);
 
         try {
             return (int)$qb->getQuery()->getSingleScalarResult();
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException | NoResultException $e) {
             return 0;
         }
     }

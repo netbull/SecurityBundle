@@ -23,7 +23,7 @@ abstract class BaseFingerprint implements FingerprintInterface
     /**
      * {@inheritdoc}
      */
-    public function getFingerprintData()
+    public function getFingerprintData(): ?array
     {
         return $this->data;
     }
