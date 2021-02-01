@@ -10,7 +10,7 @@
   "require" : {
     "php": "^7.2.5",
     "browscap/browscap-php": "5.*",
-    "symfony/framework-bundle": "5.0.*|5.1.*|5.2.*",
+    "symfony/framework-bundle": "5.1.*|5.2.*",
     "symfony/monolog-bundle": "3.*",
     "symfony/orm-pack": "^2.0",
     "netbull/core-bundle": "5.*"
