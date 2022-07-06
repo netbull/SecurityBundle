@@ -1,6 +1,6 @@
 services:
     NetBull\SecurityBundle\Fingerprints\Browser:
-        arguments: [ '%kernel.project_dir%', '@logger' ]
+        arguments: [ '@logger', '@Psr\Cache\CacheItemPoolInterface' ]
         tags: { name: netbull_security.fingerprint }
 
     NetBull\SecurityBundle\Fingerprints\Ip:

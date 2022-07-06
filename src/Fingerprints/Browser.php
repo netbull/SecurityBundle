@@ -5,19 +5,15 @@ namespace NetBull\SecurityBundle\Fingerprints;
 use BrowscapPHP\Browscap;
 use BrowscapPHP\Exception;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Class Browser
- * @package NetBull\SecurityBundle\Fingerprints
- */
 class Browser extends BaseFingerprint
 {
     /**
-     * Cache dir for the Browscap
-     * @var string
+     * @var CacheInterface
      */
-    private $cacheDir;
+    private $cache;
 
     /**
      * @var LoggerInterface
@@ -25,14 +21,13 @@ class Browser extends BaseFingerprint
     private $logger;
 
     /**
-     * Browser constructor.
-     * @param string $projectDir
      * @param LoggerInterface $logger
+     * @param CacheInterface $cache
      */
-    public function __construct(string $projectDir, LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, CacheInterface $cache)
     {
-        $this->cacheDir = $projectDir . '/vendor/browscap/browscap-php/resources/';
         $this->logger = $logger;
+        $this->cache = $cache;
     }
 
     /**
@@ -40,10 +35,7 @@ class Browser extends BaseFingerprint
      */
     public function compute(?Request $request = null): ?string
     {
-        $fileCache = new \Doctrine\Common\Cache\FilesystemCache($this->cacheDir);
-        $cache = new \Roave\DoctrineSimpleCache\SimpleCacheAdapter($fileCache);
-
-        $bc = new Browscap($cache, $this->logger);
+        $bc = new Browscap($this->cache, $this->logger);
 
         try {
             $result = json_encode($bc->getBrowser());

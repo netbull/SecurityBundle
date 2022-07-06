@@ -4,14 +4,11 @@ namespace NetBull\SecurityBundle\Fingerprints;
 
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Class Ip
- * @package NetBull\SecurityBundle\Fingerprints
- */
 class Ip extends BaseFingerprint
 {
     /**
-     * {@inheritdoc}
+     * @param Request|null $request
+     * @return string|null
      */
     public function compute(?Request $request = null): ?string
     {

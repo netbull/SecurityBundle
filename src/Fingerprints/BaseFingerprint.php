@@ -4,10 +4,6 @@ namespace NetBull\SecurityBundle\Fingerprints;
 
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Class BaseFingerprint
- * @package NetBull\SecurityBundle\Fingerprints
- */
 abstract class BaseFingerprint implements FingerprintInterface
 {
     /**
@@ -16,12 +12,12 @@ abstract class BaseFingerprint implements FingerprintInterface
     protected $data = null;
 
     /**
-     * {@inheritdoc}
+     * @param Request|null $request
      */
     abstract public function compute(?Request $request = null);
 
     /**
-     * {@inheritdoc}
+     * @return array|null
      */
     public function getFingerprintData(): ?array
     {
