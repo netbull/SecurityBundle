@@ -1,3 +1,10 @@
+## [5.4.3](https://github.com/netbull/SecurityBundle/compare/v5.4.2...v5.4.3) (2022-07-06)
+
+
+### Bug Fixes
+
+* browsecap version ([b018d3b](https://github.com/netbull/SecurityBundle/commit/b018d3b0f375dda3caec39494c8bf127aaaa0b91))
+
 ## [5.4.2](https://github.com/netbull/SecurityBundle/compare/v5.4.1...v5.4.2) (2022-07-06)
 
 
