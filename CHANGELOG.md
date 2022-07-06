@@ -1,3 +1,10 @@
+## [5.4.4](https://github.com/netbull/SecurityBundle/compare/v5.4.3...v5.4.4) (2022-07-06)
+
+
+### Bug Fixes
+
+* moved to Psr/Cache ([f544d70](https://github.com/netbull/SecurityBundle/commit/f544d704cc97a93d75568c5b165d26a08cbf6c92))
+
 ## [5.4.3](https://github.com/netbull/SecurityBundle/compare/v5.4.2...v5.4.3) (2022-07-06)
 
 
