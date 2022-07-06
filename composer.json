@@ -8,7 +8,7 @@
   }],
   "license" : "AGPL-3.0-or-later",
   "require" : {
-    "php": "^7.2.5",
+    "php": "^7.2.5 || ^8.0 || ^8.1",
     "browscap/browscap-php": "5.*",
     "symfony/framework-bundle": "5.2.*|5.3.*|5.4.*",
     "symfony/monolog-bundle": "3.*",
@@ -16,7 +16,7 @@
     "netbull/core-bundle": "5.*"
   },
   "require-dev" : {
-    "symfony/phpunit-bridge": "5.1.*|5.2.*"
+    "symfony/phpunit-bridge": "5.1.*|5.2.*|5.4"
   },
   "autoload" : {
     "psr-4" : {
