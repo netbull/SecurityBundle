@@ -59,7 +59,7 @@ class SecurityListener
     public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
-        if (!$event->isMasterRequest()) {
+        if (!$event->isMainRequest()) {
             return;
         }
 
