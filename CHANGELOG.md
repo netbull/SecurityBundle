@@ -1,3 +1,10 @@
+## [5.4.6](https://github.com/netbull/SecurityBundle/compare/v5.4.5...v5.4.6) (2022-07-07)
+
+
+### Bug Fixes
+
+* removed deprecated methods usage ([9c08d07](https://github.com/netbull/SecurityBundle/commit/9c08d078c11751f992c7d0c99a2c8b1d55d0c33a))
+
 ## [5.4.5](https://github.com/netbull/SecurityBundle/compare/v5.4.4...v5.4.5) (2022-07-07)
 
 
