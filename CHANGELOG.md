@@ -1,3 +1,10 @@
+## [5.4.5](https://github.com/netbull/SecurityBundle/compare/v5.4.4...v5.4.5) (2022-07-07)
+
+
+### Bug Fixes
+
+* moved to Symfony/Cache ([0895199](https://github.com/netbull/SecurityBundle/commit/08951992cb3a5fad69513ea36c1c76ed33c433f1))
+
 ## [5.4.4](https://github.com/netbull/SecurityBundle/compare/v5.4.3...v5.4.4) (2022-07-06)
 
 
