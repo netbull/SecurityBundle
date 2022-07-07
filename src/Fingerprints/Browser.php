@@ -4,9 +4,11 @@ namespace NetBull\SecurityBundle\Fingerprints;
 
 use BrowscapPHP\Browscap;
 use BrowscapPHP\Exception;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use MatthiasMullie\Scrapbook\Adapters\Flysystem;
+use MatthiasMullie\Scrapbook\Psr16\SimpleCache;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\HttpFoundation\Request;
 
 class Browser extends BaseFingerprint
@@ -36,8 +38,9 @@ class Browser extends BaseFingerprint
      */
     public function compute(?Request $request = null): ?string
     {
-        $adapter = new FilesystemAdapter('browser', 0, $this->cacheDir);
-        $cache = new Psr16Cache($adapter);
+        $adapter = new LocalFilesystemAdapter($this->cacheDir);
+        $filesystem = new Filesystem($adapter);
+        $cache = new SimpleCache(new Flysystem($filesystem));
         $bc = new Browscap($cache, $this->logger);
 
         try {
