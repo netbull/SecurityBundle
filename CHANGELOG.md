@@ -1,3 +1,10 @@
+## [5.4.7](https://github.com/netbull/SecurityBundle/compare/v5.4.6...v5.4.7) (2022-07-07)
+
+
+### Bug Fixes
+
+* removed symfony/cache direct dependency ([3273bc8](https://github.com/netbull/SecurityBundle/commit/3273bc8c9af99bced956a5f1d33f4a2b60a7648e))
+
 ## [5.4.6](https://github.com/netbull/SecurityBundle/compare/v5.4.5...v5.4.6) (2022-07-07)
 
 
