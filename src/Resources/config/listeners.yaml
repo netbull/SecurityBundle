@@ -1,0 +1,5 @@
+services:
+  NetBull\SecurityBundle\EventListener\SecurityListener:
+    arguments: [ '@NetBull\SecurityBundle\Managers\SecurityManager', '@router', '', '' ]
+    tags:
+      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 0 }

@@ -3,7 +3,6 @@
 namespace NetBull\SecurityBundle\Managers;
 
 use DateTime;
-use Doctrine\ORM\ORMException;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,46 +17,42 @@ use NetBull\SecurityBundle\Repository\AttemptRepository;
 use NetBull\SecurityBundle\Fingerprints\FingerprintInterface;
 use NetBull\SecurityBundle\Exception\InvalidFingerprintException;
 
-/**
- * Class SecurityManager
- * @package NetBull\SecurityBundle\Managers
- */
 class SecurityManager
 {
     /**
      * @var int
      */
-    protected $maxAttempts;
+    protected int $maxAttempts;
 
     /**
      * @var int
      */
-    protected $attemptsThreshold;
+    protected int $attemptsThreshold;
 
     /**
      * @var int
      */
-    protected $banThreshold;
+    protected int $banThreshold;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $fingerprintName;
-
-    /**
-     * @var int
-     */
-    protected $gcProbability;
+    protected ?string $fingerprintName = null;
 
     /**
      * @var int
      */
-    protected $gcDivisor;
+    protected int $gcProbability;
+
+    /**
+     * @var int
+     */
+    protected int $gcDivisor;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @var AttemptRepository
@@ -77,21 +72,19 @@ class SecurityManager
     /**
      * @var array
      */
-    protected $list = [];
+    protected array $list = [];
 
     /**
      * @var FingerprintInterface[]
      */
-    protected $fingerprints = [];
+    protected array $fingerprints = [];
 
     /**
-     * @var Request
+     * @var Request|null
      */
-    protected $request;
+    protected ?Request $request = null;
 
     /**
-     * SecurityManager constructor.
-     *
      * @param int $maxAttempts
      * @param int $attemptsThreshold
      * @param int $banThreshold
@@ -128,7 +121,7 @@ class SecurityManager
     }
 
     /**
-     * @param null|string $name
+     * @param string|null $name
      * @return FingerprintInterface
      * @throws InvalidFingerprintException
      */
@@ -147,7 +140,6 @@ class SecurityManager
      * @param Request $request
      * @return bool
      * @throws InvalidFingerprintException
-     * @throws ORMException
      */
     public function storeAttempt(Request $request): bool
     {
@@ -167,7 +159,6 @@ class SecurityManager
 
         $this->log(sprintf('Stored fingerprint "%s".', $fingerprint));
 
-
         if ($this->isMaxAttemptsExceeded($fingerprint)) {
             $ban = new Ban();
             $ban->copy($attempt);
@@ -180,7 +171,6 @@ class SecurityManager
     ######################################################
     #                         Tests                      #
     ######################################################
-
     /**
      * @param $fingerprint
      * @return mixed|null
@@ -252,13 +242,12 @@ class SecurityManager
     ######################################################
     #                   Helper Methods                   #
     ######################################################
-
     /**
      * @param Request $request
-     * @return mixed
+     * @return string|null
      * @throws InvalidFingerprintException
      */
-    public function computeFingerprint(Request $request)
+    public function computeFingerprint(Request $request): ?string
     {
         $this->request = $request;
 
@@ -270,7 +259,7 @@ class SecurityManager
      */
     private function refreshLists()
     {
-        if (0 === count($this->list)) {
+        if (0 === sizeof($this->list)) {
             $this->list = $this->listedRepository->getAll();
         }
     }
@@ -310,7 +299,7 @@ class SecurityManager
             return;
         }
 
-        $this->log(sprintf('Removing old attempts.'));
+        $this->log('Removing old attempts.');
         $this->attemptRepository->removeOldRecords($this->getFreshAttemptsTime());
     }
 

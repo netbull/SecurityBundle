@@ -8,9 +8,9 @@ interface FingerprintInterface
 {
     /**
      * @param Request|null $request
-     * @return mixed
+     * @return string|null
      */
-    public function compute(?Request $request = null);
+    public function compute(?Request $request = null): ?string;
 
     /**
      * @return array|null

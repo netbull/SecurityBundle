@@ -1,47 +1,42 @@
 <?php
 
-namespace NetBull\SecurityBundle\Security;
+namespace NetBull\SecurityBundle\EventListener;
 
+use NetBull\SecurityBundle\Exception\BannedException;
+use NetBull\SecurityBundle\Exception\InvalidFingerprintException;
+use NetBull\SecurityBundle\Exception\InvalidRouteException;
+use NetBull\SecurityBundle\Managers\SecurityManager;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use NetBull\SecurityBundle\Managers\SecurityManager;
-use NetBull\SecurityBundle\Exception\BannedException;
-use NetBull\SecurityBundle\Exception\InvalidRouteException;
-use NetBull\SecurityBundle\Exception\InvalidFingerprintException;
 
-/**
- * Class SecurityListener
- * @package NetBull\SecurityBundle\Security
- */
 class SecurityListener
 {
     /**
      * @var SecurityManager
      */
-    protected $manager;
+    protected SecurityManager $manager;
 
     /**
      * @var RouterInterface
      */
-    protected $router;
+    protected RouterInterface $router;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $bannedRoute;
+    protected ?string $bannedRoute = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $unbannedRoute;
+    protected ?string $unbannedRoute = null;
 
     /**
-     * SecurityListener constructor.
      * @param SecurityManager $manager
      * @param RouterInterface $router
-     * @param null|string $bannedRoute
-     * @param null|string $unbannedRoute
+     * @param string|null $bannedRoute
+     * @param string|null $unbannedRoute
      */
     public function __construct(SecurityManager $manager, RouterInterface $router, ?string $bannedRoute = null, ?string $unbannedRoute = null)
     {
@@ -98,8 +93,6 @@ class SecurityListener
      */
     protected function getRedirectResponse(string $routeName): RedirectResponse
     {
-        return new RedirectResponse(
-            $this->router->generate($routeName)
-        );
+        return new RedirectResponse($this->router->generate($routeName));
     }
 }

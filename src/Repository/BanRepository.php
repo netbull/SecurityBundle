@@ -6,73 +6,62 @@ use DateTime;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
 use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
 use NetBull\SecurityBundle\Entity\Ban;
 
-/**
- * Class BanRepository
- * @package NetBull\SecurityBundle\Repository
- */
 class BanRepository extends EntityRepository implements PaginatorRepositoryInterface
 {
     /**
-     * {@inheritdoc}
+     * @param array $params
+     * @return QueryBuilder
      */
     public function getPaginationCount(array $params = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('b');
-        $qb
-            ->select($qb->expr()->countDistinct('b'));
+        $qb->select($qb->expr()->countDistinct('b'));
 
-        if (isset($params['query']) && '' !== $params['query']) {
-            $qb
-                ->andWhere($qb->expr()->orX(
-                    $qb->expr()->eq('b.id', ':qE'),
-                    $qb->expr()->like('b.fingerprint', ':qL')
-                ))
-                ->setParameter('qE', $params['query'])
-                ->setParameter('qL', '%' . trim($params['query']) . '%');
+        if (!empty($params['query'])) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('b.id', ':qE'),
+                $qb->expr()->like('b.fingerprint', ':qL')
+            ))
+            ->setParameters([
+                'qE' => $params['query'],
+                'qL' => '%'.trim($params['query']).'%',
+            ]);
         }
 
         return $qb;
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $params
+     * @return QueryBuilder
      */
     public function getPaginationIds(array $params = []): QueryBuilder
     {
         $qb = $this->getPaginationCount($params);
-        $qb->resetDQLPart('select');
-        $qb->select('b.id')->groupBy('b.id');
-
-        return $qb;
+        return $qb->select('b.id')->groupBy('b.id');
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $params
+     * @return QueryBuilder
      */
     public function getPaginationQuery(array $params = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('b');
-        $qb->select('partial b.{id,fingerprint,createdAt,expireAt}');
-
-        return $qb;
+        return $qb->select('partial b.{id,fingerprint,createdAt,expireAt}');
     }
 
     /**
      * @param Ban $attempt
-     * @throws ORMException
      */
     public function save(Ban $attempt)
     {
         $this->_em->persist($attempt);
-        try {
-            $this->_em->flush();
-        } catch (OptimisticLockException $e) {}
+        $this->_em->flush();
     }
 
     /**
@@ -96,18 +85,17 @@ class BanRepository extends EntityRepository implements PaginatorRepositoryInter
     {
         $now = new DateTime('now');
         $qb = $this->getPaginationCount();
-        $qb
-            ->where($qb->expr()->andX(
-                $qb->expr()->eq('b.fingerprint', ':fingerprint'),
-                $qb->expr()->orX(
-                    $qb->expr()->gte('b.expireAt', ':time'),
-                    $qb->expr()->isNull('b.expireAt')
-                )
-            ))
-            ->setParameters([
-                'fingerprint' => $fingerprint,
-                'time' => $now,
-            ]);
+        $qb->where($qb->expr()->andX(
+            $qb->expr()->eq('b.fingerprint', ':fingerprint'),
+            $qb->expr()->orX(
+                $qb->expr()->gte('b.expireAt', ':time'),
+                $qb->expr()->isNull('b.expireAt')
+            )
+        ))
+        ->setParameters([
+            'fingerprint' => $fingerprint,
+            'time' => $now,
+        ]);
 
         try {
             return 0 < (int)$qb->getQuery()->getSingleScalarResult();

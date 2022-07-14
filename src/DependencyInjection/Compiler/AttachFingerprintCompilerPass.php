@@ -7,14 +7,10 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
-/**
- * Class AttachFingerprintCompilerPass
- * @package NetBull\SecurityBundle\DependencyInjection\Compiler
- */
 class AttachFingerprintCompilerPass implements CompilerPassInterface
 {
     /**
-     * {@inheritDoc}
+     * @param ContainerBuilder $container
      */
     public function process(ContainerBuilder $container)
     {

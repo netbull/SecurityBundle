@@ -8,10 +8,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use NetBull\SecurityBundle\DependencyInjection\NetBullSecurityExtension;
 use NetBull\SecurityBundle\DependencyInjection\Compiler\AttachFingerprintCompilerPass;
 
-/**
- * Class NetBullSecurityBundle
- * @package NetBull\SecurityBundle
- */
 class NetBullSecurityBundle extends Bundle
 {
     /**

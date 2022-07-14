@@ -7,9 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class BaseListing
- * @package NetBull\SecurityBundle\Entity
- *
  * @ORM\MappedSuperclass
  */
 abstract class BaseListing
@@ -20,14 +17,14 @@ abstract class BaseListing
      * @Assert\NotBlank
      * @ORM\Column(type="string")
      */
-    private $fingerprint;
+    private ?string $fingerprint = null;
 
     /**
      * @var DateTime
      *
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    private DateTime $createdAt;
 
     /**
      * @var string|null
@@ -35,18 +32,15 @@ abstract class BaseListing
      * @Assert\Ip
      * @ORM\Column(type="string", nullable=true)
      */
-    private $ip;
+    private ?string $ip = null;
 
     /**
      * @var array|null
      *
      * @ORM\Column(type="json", nullable=true)
      */
-    private $metaData;
+    private ?array $metaData = null;
 
-    /**
-     * Attempt constructor.
-     */
     public function __construct()
     {
         $this->createdAt = new DateTime('now');

@@ -9,14 +9,11 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-/**
- * Class NetBullSecurityExtension
- * @package NetBull\SecurityBundle\DependencyInjection
- */
 class NetBullSecurityExtension extends Extension
 {
     /**
-     * {@inheritdoc}
+     * @param array $configs
+     * @param ContainerBuilder $container
      * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container)
@@ -25,8 +22,9 @@ class NetBullSecurityExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yaml');
         $loader->load('fingerprints.yaml');
-        $loader->load('security.yaml');
+        $loader->load('listeners.yaml');
 
         $service = $container->getDefinition('netbull_security.security_listener');
         $service->replaceArgument(2, $config['banned_route']);

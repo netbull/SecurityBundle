@@ -17,13 +17,13 @@ class Listed
     const ACTION_DENY = 'deny';
 
     /**
-     * @var integer
+     * @var int|null
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @var string
@@ -31,19 +31,19 @@ class Listed
      * @Assert\Ip
      * @ORM\Column(type="string")
      */
-    private $fingerprint;
+    private string $fingerprint = '';
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=5)
      */
-    private $action = self::ACTION_ALLOW;
+    private string $action = self::ACTION_ALLOW;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -87,10 +87,4 @@ class Listed
     {
         $this->action = $action;
     }
-
-    ######################################################
-    #                                                    #
-    #                   Helper Methods                   #
-    #                                                    #
-    ######################################################
 }

@@ -17,7 +17,7 @@ class Attempt extends BaseListing
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @return int|null

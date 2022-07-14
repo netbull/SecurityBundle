@@ -16,12 +16,12 @@ class Browser extends BaseFingerprint
     /**
      * @var string
      */
-    private $cacheDir;
+    private string $cacheDir;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @param string $projectDir
@@ -34,7 +34,8 @@ class Browser extends BaseFingerprint
     }
 
     /**
-     * {@inheritdoc}
+     * @param Request|null $request
+     * @return string|null
      */
     public function compute(?Request $request = null): ?string
     {

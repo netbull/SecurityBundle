@@ -18,14 +18,14 @@ class Ban extends BaseListing
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $expireAt;
+    private ?DateTime $expireAt = null;
 
     /**
      * @return int|null
@@ -36,21 +36,20 @@ class Ban extends BaseListing
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getExpireAt(): DateTime
+    public function getExpireAt(): ?DateTime
     {
         return $this->expireAt;
     }
 
     /**
-     * @param DateTime $expireAt
+     * @param DateTime|null $expireAt
      * @return Ban
      */
-    public function setExpireAt(DateTime $expireAt): Ban
+    public function setExpireAt(?DateTime $expireAt): Ban
     {
         $this->expireAt = $expireAt;
-
         return $this;
     }
 }

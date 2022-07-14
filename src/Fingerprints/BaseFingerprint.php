@@ -7,14 +7,15 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class BaseFingerprint implements FingerprintInterface
 {
     /**
-     * @var null|array
+     * @var array|null
      */
-    protected $data = null;
+    protected ?array $data = null;
 
     /**
      * @param Request|null $request
+     * @return string|null
      */
-    abstract public function compute(?Request $request = null);
+    abstract public function compute(?Request $request = null): ?string;
 
     /**
      * @return array|null
