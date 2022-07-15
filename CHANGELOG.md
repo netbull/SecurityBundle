@@ -1,3 +1,10 @@
+## [5.4.8](https://github.com/netbull/SecurityBundle/compare/v5.4.7...v5.4.8) (2022-07-14)
+
+
+### Bug Fixes
+
+* cleaned deprecations ([b6d8eba](https://github.com/netbull/SecurityBundle/commit/b6d8eba595237725be9f3e35ec96a3fd982760b0))
+
 ## [5.4.7](https://github.com/netbull/SecurityBundle/compare/v5.4.6...v5.4.7) (2022-07-07)
 
 
