@@ -1,3 +1,10 @@
+## [5.4.9](https://github.com/netbull/SecurityBundle/compare/v5.4.8...v5.4.9) (2022-07-15)
+
+
+### Bug Fixes
+
+* listener definition ([aec0b7f](https://github.com/netbull/SecurityBundle/commit/aec0b7f2890768da8f0dc7b21ee1abb3ee095cd6))
+
 ## [5.4.8](https://github.com/netbull/SecurityBundle/compare/v5.4.7...v5.4.8) (2022-07-14)
 
 
