@@ -3,6 +3,7 @@
 namespace NetBull\SecurityBundle\DependencyInjection;
 
 use Exception;
+use NetBull\SecurityBundle\EventListener\SecurityListener;
 use NetBull\SecurityBundle\Managers\SecurityManager;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader;
@@ -26,7 +27,7 @@ class NetBullSecurityExtension extends Extension
         $loader->load('fingerprints.yaml');
         $loader->load('listeners.yaml');
 
-        $service = $container->getDefinition('netbull_security.security_listener');
+        $service = $container->getDefinition(SecurityListener::class);
         $service->replaceArgument(2, $config['banned_route']);
         $service->replaceArgument(3, $config['unbanned_route']);
 
