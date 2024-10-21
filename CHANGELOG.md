@@ -1,3 +1,10 @@
+## [5.4.11](https://github.com/netbull/SecurityBundle/compare/v5.4.10...v5.4.11) (2024-10-21)
+
+
+### Bug Fixes
+
+* interface usage ([63f93a1](https://github.com/netbull/SecurityBundle/commit/63f93a1d94d5d3fdc88e62b044a52de855c015f1))
+
 ## [5.4.10](https://github.com/netbull/SecurityBundle/compare/v5.4.9...v5.4.10) (2024-10-21)
 
 
