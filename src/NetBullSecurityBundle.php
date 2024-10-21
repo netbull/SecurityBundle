@@ -23,7 +23,7 @@ class NetBullSecurityBundle extends Bundle
     /**
      * @return NetBullSecurityExtension|null|ExtensionInterface
      */
-    public function getContainerExtension()
+    public function getContainerExtension(): ?ExtensionInterface
     {
         return new NetBullSecurityExtension();
     }
