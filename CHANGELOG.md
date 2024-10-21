@@ -1,3 +1,11 @@
+## [5.4.10](https://github.com/netbull/SecurityBundle/compare/v5.4.9...v5.4.10) (2024-10-21)
+
+
+### Bug Fixes
+
+* bump versions ([c333676](https://github.com/netbull/SecurityBundle/commit/c3336769c3f555524a5b1891939f10de9cb7d1c6))
+* Update release.yml ([0128819](https://github.com/netbull/SecurityBundle/commit/0128819ac3d04cc996f895550f429bd80e8e8958))
+
 ## [5.4.9](https://github.com/netbull/SecurityBundle/compare/v5.4.8...v5.4.9) (2022-07-15)
 
 
