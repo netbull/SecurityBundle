@@ -1,3 +1,10 @@
+## [7.0.1](https://github.com/netbull/SecurityBundle/compare/v7.0.0...v7.0.1) (2025-05-22)
+
+
+### Bug Fixes
+
+* dependency ([3b0b4fa](https://github.com/netbull/SecurityBundle/commit/3b0b4face9291598b7337e016ecf9f8641aeeaca))
+
 # [7.0.0](https://github.com/netbull/SecurityBundle/compare/v6.0.0...v7.0.0) (2025-05-22)
 
 
