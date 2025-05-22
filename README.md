@@ -1,6 +1,5 @@
 AuthBundle
 ==========
-[![Build Status](https://travis-ci.org/netbull/SecurityBundle.svg?branch=master)](https://travis-ci.org/netbull/SecurityBundle)<br>
 
 Installation
 ============
