@@ -2,30 +2,27 @@
 
 namespace NetBull\SecurityBundle\Entity;
 
-use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use NetBull\SecurityBundle\Repository\BanRepository;
 
-/**
- * @ORM\Table(name="security_bans")
- * @ORM\Entity(repositoryClass="NetBull\SecurityBundle\Repository\BanRepository")
- */
+#[ORM\Table(name: 'security_bans')]
+#[ORM\Entity(repositoryClass: BanRepository::class)]
 class Ban extends BaseListing
 {
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id = null;
 
     /**
-     * @var DateTime|null
-     *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @var DateTimeInterface|null
      */
-    private ?DateTime $expireAt = null;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTimeInterface $expireAt = null;
 
     /**
      * @return int|null
@@ -36,18 +33,18 @@ class Ban extends BaseListing
     }
 
     /**
-     * @return DateTime|null
+     * @return DateTimeInterface|null
      */
-    public function getExpireAt(): ?DateTime
+    public function getExpireAt(): ?DateTimeInterface
     {
         return $this->expireAt;
     }
 
     /**
-     * @param DateTime|null $expireAt
+     * @param DateTimeInterface|null $expireAt
      * @return Ban
      */
-    public function setExpireAt(?DateTime $expireAt): Ban
+    public function setExpireAt(?DateTimeInterface $expireAt): Ban
     {
         $this->expireAt = $expireAt;
         return $this;

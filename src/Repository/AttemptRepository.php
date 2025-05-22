@@ -3,11 +3,15 @@
 namespace NetBull\SecurityBundle\Repository;
 
 use DateTime;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
 use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
+use NetBull\CoreBundle\Utils\Arrays;
 use NetBull\SecurityBundle\Entity\Attempt;
 
 class AttemptRepository extends EntityRepository implements PaginatorRepositoryInterface
@@ -26,10 +30,10 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
                 $qb->expr()->eq('a.id', ':qE'),
                 $qb->expr()->like('a.fingerprint', ':qL')
             ))
-            ->setParameters([
-                'qE' => $params['query'],
-                'qL' => '%'.trim($params['query']).'%'
-            ]);
+            ->setParameters(new ArrayCollection([
+                new Parameter('qE', $params['query']),
+                new Parameter('qL', '%'.trim($params['query']).'%'),
+            ]));
         }
 
         return $qb;
@@ -57,17 +61,19 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
 
     /**
      * @param Attempt $attempt
+     * @return void
      */
-    public function save(Attempt $attempt)
+    public function save(Attempt $attempt): void
     {
-        $this->_em->persist($attempt);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($attempt);
+        $this->getEntityManager()->flush();
     }
 
     /**
-     * @param DateTime $time
+     * @param DateTimeInterface $time
+     * @return void
      */
-    public function removeOldRecords(DateTime $time)
+    public function removeOldRecords(DateTimeInterface $time): void
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->delete($this->getEntityName(), 'a')
@@ -89,14 +95,14 @@ class AttemptRepository extends EntityRepository implements PaginatorRepositoryI
                 $qb->expr()->eq('a.fingerprint', ':fingerprint'),
                 $qb->expr()->gte('a.createdAt', ':time')
             ))
-            ->setParameters([
-                'fingerprint' => $fingerprint,
-                'time' => $time,
-            ]);
+            ->setParameters(new ArrayCollection([
+                new Parameter('fingerprint', $fingerprint),
+                new Parameter('time', $time),
+            ]));
 
         try {
             return (int)$qb->getQuery()->getSingleScalarResult();
-        } catch (NonUniqueResultException | NoResultException $e) {
+        } catch (NonUniqueResultException | NoResultException) {
             return 0;
         }
     }

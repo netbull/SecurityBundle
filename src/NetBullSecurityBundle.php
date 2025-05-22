@@ -11,9 +11,10 @@ use NetBull\SecurityBundle\DependencyInjection\Compiler\AttachFingerprintCompile
 class NetBullSecurityBundle extends Bundle
 {
     /**
-     * {@inheritdoc}
+     * @param ContainerBuilder $container
+     * @return void
      */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
 
@@ -21,7 +22,7 @@ class NetBullSecurityBundle extends Bundle
     }
 
     /**
-     * @return NetBullSecurityExtension|null|ExtensionInterface
+     * @return ExtensionInterface|null
      */
     public function getContainerExtension(): ?ExtensionInterface
     {

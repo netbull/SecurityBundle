@@ -3,9 +3,11 @@
 namespace NetBull\SecurityBundle\Repository;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
 use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
 use NetBull\SecurityBundle\Entity\Ban;
@@ -26,10 +28,10 @@ class BanRepository extends EntityRepository implements PaginatorRepositoryInter
                 $qb->expr()->eq('b.id', ':qE'),
                 $qb->expr()->like('b.fingerprint', ':qL')
             ))
-            ->setParameters([
-                'qE' => $params['query'],
-                'qL' => '%'.trim($params['query']).'%',
-            ]);
+            ->setParameters(new ArrayCollection([
+                new Parameter('qE', $params['query']),
+                new Parameter('qL', '%'.trim($params['query']).'%'),
+            ]));
         }
 
         return $qb;
@@ -57,17 +59,18 @@ class BanRepository extends EntityRepository implements PaginatorRepositoryInter
 
     /**
      * @param Ban $attempt
+     * @return void
      */
-    public function save(Ban $attempt)
+    public function save(Ban $attempt): void
     {
-        $this->_em->persist($attempt);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($attempt);
+        $this->getEntityManager()->flush();
     }
 
     /**
      * Removes all expired records
      */
-    public function flush()
+    public function flush(): void
     {
         $now = new DateTime('now');
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -92,14 +95,14 @@ class BanRepository extends EntityRepository implements PaginatorRepositoryInter
                 $qb->expr()->isNull('b.expireAt')
             )
         ))
-        ->setParameters([
-            'fingerprint' => $fingerprint,
-            'time' => $now,
-        ]);
+        ->setParameters(new ArrayCollection([
+            new Parameter('fingerprint', $fingerprint),
+            new Parameter('time', $now),
+        ]));
 
         try {
             return 0 < (int)$qb->getQuery()->getSingleScalarResult();
-        } catch (NonUniqueResultException | NoResultException $e) {
+        } catch (NonUniqueResultException | NoResultException) {
             return false;
         }
     }

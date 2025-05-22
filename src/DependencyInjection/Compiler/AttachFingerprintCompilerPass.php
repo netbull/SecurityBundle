@@ -11,8 +11,9 @@ class AttachFingerprintCompilerPass implements CompilerPassInterface
 {
     /**
      * @param ContainerBuilder $container
+     * @return void
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $manager = $container->getDefinition(SecurityManager::class);
         foreach ($container->findTaggedServiceIds('netbull_security.fingerprint') as $id => $attributes) {

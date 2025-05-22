@@ -3,41 +3,37 @@
 namespace NetBull\SecurityBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NetBull\SecurityBundle\Repository\ListedRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Table(name="security_listed")
- * @UniqueEntity(fields="fingerprint", message="Sorry, you already use this Fingerprint.")
- * @ORM\Entity(repositoryClass="NetBull\SecurityBundle\Repository\ListedRepository")
- */
+#[ORM\Table(name: 'security_listed')]
+#[ORM\Entity(repositoryClass: ListedRepository::class)]
+#[UniqueEntity(fields: 'fingerprint', message: 'Sorry, you already use this Fingerprint.')]
 class Listed
 {
-    const ACTION_ALLOW = 'allow';
-    const ACTION_DENY = 'deny';
+    const string ACTION_ALLOW = 'allow';
+    const string ACTION_DENY = 'deny';
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id = null;
 
     /**
      * @var string
-     *
-     * @Assert\Ip
-     * @ORM\Column(type="string")
      */
+    #[Assert\Ip]
+    #[ORM\Column(type: 'string')]
     private string $fingerprint = '';
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=5)
      */
+    #[ORM\Column(type: 'string', length: 5)]
     private string $action = self::ACTION_ALLOW;
 
     /**

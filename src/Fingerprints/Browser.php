@@ -46,7 +46,7 @@ class Browser extends BaseFingerprint
 
         try {
             $result = json_encode($bc->getBrowser());
-        } catch (Exception $e) {
+        } catch (Exception) {
             return null;
         }
 

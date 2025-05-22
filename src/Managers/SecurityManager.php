@@ -114,8 +114,9 @@ class SecurityManager
     /**
      * @param string $name
      * @param FingerprintInterface $fingerprint
+     * @return void
      */
-    public function addFingerprint(string $name, FingerprintInterface $fingerprint)
+    public function addFingerprint(string $name, FingerprintInterface $fingerprint): void
     {
         $this->fingerprints[$name] = $fingerprint;
     }
@@ -173,9 +174,9 @@ class SecurityManager
     ######################################################
     /**
      * @param $fingerprint
-     * @return mixed|null
+     * @return mixed
      */
-    public function isListed($fingerprint)
+    public function isListed($fingerprint): mixed
     {
         foreach ($this->list as $listedRecord) {
             if (false !== ip2long($fingerprint) && IpUtils::checkIp($fingerprint, $listedRecord['fingerprint'])) {
@@ -192,7 +193,7 @@ class SecurityManager
     }
 
     /**
-     * @param null|string $fingerprint
+     * @param string|null $fingerprint
      * @return bool
      */
     public function isBlocked(?string $fingerprint): bool
@@ -257,7 +258,7 @@ class SecurityManager
     /**
      * Refreshes the lists
      */
-    private function refreshLists()
+    private function refreshLists(): void
     {
         if (0 === sizeof($this->list)) {
             $this->list = $this->listedRepository->getAll();
@@ -272,7 +273,7 @@ class SecurityManager
         $time = null;
         try {
             $time = new DateTime('- '.$this->attemptsThreshold.' seconds');
-        } catch (Exception $e) {}
+        } catch (Exception) {}
 
         return $time;
     }
@@ -293,7 +294,7 @@ class SecurityManager
     /**
      * Removes old attempts
      */
-    private function removeOldRecords()
+    private function removeOldRecords(): void
     {
         if (!$this->shouldGC()) {
             return;
@@ -318,7 +319,7 @@ class SecurityManager
     /**
      * @param string $message
      */
-    private function log(string $message)
+    private function log(string $message): void
     {
         $this->logger->info("[ NS ] " . $message);
     }

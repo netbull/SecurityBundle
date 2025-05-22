@@ -48,10 +48,11 @@ class SecurityListener
 
     /**
      * @param RequestEvent $event
-     * @throws InvalidRouteException
+     * @return void
      * @throws InvalidFingerprintException
+     * @throws InvalidRouteException
      */
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
         if (!$event->isMainRequest()) {

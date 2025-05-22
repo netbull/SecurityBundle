@@ -3,42 +3,37 @@
 namespace NetBull\SecurityBundle\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 abstract class BaseListing
 {
     /**
      * @var string|null
-     *
-     * @Assert\NotBlank
-     * @ORM\Column(type="string")
      */
+    #[Assert\NotBlank]
+    #[ORM\Column(type: 'string')]
     private ?string $fingerprint = null;
 
     /**
-     * @var DateTime
-     *
-     * @ORM\Column(type="datetime")
+     * @var DateTimeInterface
      */
-    private DateTime $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private DateTimeInterface $createdAt;
 
     /**
      * @var string|null
-     *
-     * @Assert\Ip
-     * @ORM\Column(type="string", nullable=true)
      */
+    #[Assert\Ip]
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $ip = null;
 
     /**
      * @var array|null
-     *
-     * @ORM\Column(type="json", nullable=true)
      */
+    #[ORM\Column(type: 'json', nullable: true)]
     private ?array $metaData = null;
 
     public function __construct()
@@ -56,9 +51,9 @@ abstract class BaseListing
 
     /**
      * @param string|null $fingerprint
-     * @return BaseListing
+     * @return $this
      */
-    public function setFingerprint(?string $fingerprint): BaseListing
+    public function setFingerprint(?string $fingerprint): self
     {
         $this->fingerprint = $fingerprint;
 
@@ -75,9 +70,9 @@ abstract class BaseListing
 
     /**
      * @param DateTime $createdAt
-     * @return BaseListing
+     * @return $this
      */
-    public function setCreatedAt(DateTime $createdAt): BaseListing
+    public function setCreatedAt(DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -94,9 +89,9 @@ abstract class BaseListing
 
     /**
      * @param string|null $ip
-     * @return BaseListing
+     * @return $this
      */
-    public function setIp(?string $ip): BaseListing
+    public function setIp(?string $ip): self
     {
         $this->ip = $ip;
 
@@ -113,9 +108,9 @@ abstract class BaseListing
 
     /**
      * @param array|null $metaData
-     * @return BaseListing
+     * @return $this
      */
-    public function setMetaData(?array $metaData): BaseListing
+    public function setMetaData(?array $metaData): self
     {
         $this->metaData = $metaData;
 
@@ -127,8 +122,9 @@ abstract class BaseListing
     ######################################################
     /**
      * @param BaseListing $listing
+     * @return void
      */
-    public function copy(BaseListing $listing)
+    public function copy(BaseListing $listing): void
     {
         $this->setFingerprint($listing->getFingerprint());
         $this->setIp($listing->getIp());

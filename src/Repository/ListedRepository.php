@@ -2,7 +2,9 @@
 
 namespace NetBull\SecurityBundle\Repository;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
 use NetBull\CoreBundle\Paginator\PaginatorRepositoryInterface;
 use NetBull\SecurityBundle\Entity\Listed;
@@ -23,10 +25,10 @@ class ListedRepository extends EntityRepository implements PaginatorRepositoryIn
                 $qb->expr()->eq('l.id', ':qE'),
                 $qb->expr()->like('l.fingerprint', ':qL')
             ))
-            ->setParameters([
-                'qE' => $params['query'],
-                'qL' => '%'.trim($params['query']).'%',
-            ]);
+            ->setParameters(new ArrayCollection([
+                new Parameter('qE', $params['query']),
+                new Parameter('qL', '%'.trim($params['query']).'%'),
+            ]));
         }
 
         return $qb;
@@ -55,10 +57,10 @@ class ListedRepository extends EntityRepository implements PaginatorRepositoryIn
     /**
      * @param Listed $listed
      */
-    public function save(Listed $listed)
+    public function save(Listed $listed): void
     {
-        $this->_em->persist($listed);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($listed);
+        $this->getEntityManager()->flush();
     }
 
     /**
