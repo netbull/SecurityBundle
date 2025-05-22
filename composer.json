@@ -8,17 +8,17 @@
   }],
   "license" : "AGPL-3.0-or-later",
   "require" : {
-    "php": "^7.4 || ^8.0 || ^8.1 || ^8.2 || ^8.3",
+    "php": "^8.3",
     "ext-json": "*",
-    "browscap/browscap-php": "6.*|7.*|8.*",
-    "symfony/framework-bundle": "5.2.*|5.3.*|5.4.*|6.3.*|6.4.*|7.0.*|7.1.*",
+    "browscap/browscap-php": "8.*",
+    "symfony/framework-bundle": "7.2.*",
     "symfony/monolog-bundle": "3.*",
     "symfony/orm-pack": "^2.0",
-    "netbull/core-bundle": "5.*|6.*",
-    "symfony/validator": "5.4.*|6.3.*|6.4.*|7.0.*|7.1.*"
+    "netbull/core-bundle": "7.*",
+    "symfony/validator": "7.2.*"
   },
   "require-dev" : {
-    "symfony/phpunit-bridge": "5.1.*|5.2.*|5.4|6.3.*|6.4.*|7.0.*|7.1.*"
+    "symfony/phpunit-bridge": "7.2.*"
   },
   "autoload" : {
     "psr-4" : {
