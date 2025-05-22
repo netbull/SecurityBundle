@@ -1,3 +1,15 @@
+# [6.0.0](https://github.com/netbull/SecurityBundle/compare/v5.4.11...v6.0.0) (2025-05-22)
+
+
+### chore
+
+* Update composer.json ([b799d5c](https://github.com/netbull/SecurityBundle/commit/b799d5c06b2588c0868d73ecffc2cde9f2925221))
+
+
+### BREAKING CHANGES
+
+* bump versions
+
 ## [5.4.11](https://github.com/netbull/SecurityBundle/compare/v5.4.10...v5.4.11) (2024-10-21)
 
 
