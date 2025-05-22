@@ -1,3 +1,10 @@
+## [7.0.3](https://github.com/netbull/SecurityBundle/compare/v7.0.2...v7.0.3) (2025-05-22)
+
+
+### Bug Fixes
+
+* adjustments ([f7eaae0](https://github.com/netbull/SecurityBundle/commit/f7eaae03e097854b414d270dded834ddf4b6a3c0))
+
 ## [7.0.2](https://github.com/netbull/SecurityBundle/compare/v7.0.1...v7.0.2) (2025-05-22)
 
 
