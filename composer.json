@@ -10,7 +10,7 @@
   "require" : {
     "php": "^8.3",
     "ext-json": "*",
-    "browscap/browscap-php": "8.*",
+    "browscap/browscap-php": "7.*",
     "symfony/framework-bundle": "7.2.*",
     "symfony/monolog-bundle": "3.*",
     "symfony/orm-pack": "^2.0",
