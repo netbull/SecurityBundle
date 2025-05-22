@@ -1,3 +1,13 @@
+# [7.0.0](https://github.com/netbull/SecurityBundle/compare/v6.0.0...v7.0.0) (2025-05-22)
+
+
+* Update README.md ([d2633aa](https://github.com/netbull/SecurityBundle/commit/d2633aae522ebdc3a5ef724bfc86d34442b43757))
+
+
+### BREAKING CHANGES
+
+* bump
+
 # [6.0.0](https://github.com/netbull/SecurityBundle/compare/v5.4.11...v6.0.0) (2025-05-22)
 
 
