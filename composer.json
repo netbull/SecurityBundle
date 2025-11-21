@@ -11,14 +11,14 @@
     "php": "^8.3",
     "ext-json": "*",
     "browscap/browscap-php": "7.*",
-    "symfony/framework-bundle": "7.2.*",
+    "symfony/framework-bundle": "7.2.*|7.3.*|7.4.*",
     "symfony/monolog-bundle": "3.*",
     "symfony/orm-pack": "^2.0",
     "netbull/core-bundle": "7.*",
-    "symfony/validator": "7.2.*"
+    "symfony/validator": "7.2.*|7.3.*|7.4.*"
   },
   "require-dev" : {
-    "symfony/phpunit-bridge": "7.2.*"
+    "symfony/phpunit-bridge": "7.2.*|7.3.*|7.4.*"
   },
   "autoload" : {
     "psr-4" : {
